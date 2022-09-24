@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>first-spring-security-jwt</artifactId>
+    <artifactId>second-spring-security-jwt</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
