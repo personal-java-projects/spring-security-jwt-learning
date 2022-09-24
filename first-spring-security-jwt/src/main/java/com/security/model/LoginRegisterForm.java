@@ -1,9 +1,12 @@
 package com.security.model;
 
 import com.security.pojo.User;
-import com.security.utils.PasswordUtil;
 import lombok.Data;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Data
 public class LoginRegisterForm {
@@ -14,10 +17,13 @@ public class LoginRegisterForm {
 
     private Integer roleId;
 
+
+    @SneakyThrows
     public User toUser(LoginRegisterForm form) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user = new User();
         user.setUsername(form.getUsername());
-        user.setPassword(PasswordUtil.passwordEncoder().encode(form.getPassword()));
+        user.setPassword(passwordEncoder.encode(form.getPassword()));
 
         return user;
     }

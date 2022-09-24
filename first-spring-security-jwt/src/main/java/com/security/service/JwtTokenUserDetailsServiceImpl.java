@@ -6,13 +6,13 @@ import com.security.mapper.UserMapper;
 import com.security.model.LoginRegisterForm;
 import com.security.model.SecurityUser;
 import com.security.pojo.User;
-import com.security.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +34,11 @@ public class JwtTokenUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private RoleMapper roleMapper;
 
+
+    private PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userMapper.selectUserByUsername(username);
@@ -42,7 +47,7 @@ public class JwtTokenUserDetailsServiceImpl implements UserDetailsService {
             SecurityUser securityUser = new SecurityUser();
             securityUser.setUsername(username);
             //todo 此处为了方便，直接在数据库存储的明文，实际生产中应该存储密文，则这里不用再次加密
-            securityUser.setPassword(PasswordUtil.passwordEncoder().encode(user.getPassword()));
+            securityUser.setPassword(user.getPassword());
             //获取权限集合
             Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRoleName());
             securityUser.setAuthorities(authorities);
@@ -52,7 +57,7 @@ public class JwtTokenUserDetailsServiceImpl implements UserDetailsService {
 
 
         //用户不存在直接抛出UsernameNotFoundException，security会捕获抛出BadCredentialsException
-        throw new UsernameNotFoundException("用户不存在！");
+        throw new UsernameNotFoundException(username + "不存在！");
     }
 
     public void registerUser(LoginRegisterForm form) {
@@ -62,7 +67,9 @@ public class JwtTokenUserDetailsServiceImpl implements UserDetailsService {
 
         if (exitedUser == null) {
             userMapper.insertUser(user);
-            userMapper.insertRoleUser(user.getId(), form.getRoleId());
+            userMapper.insertRoleUser(form.getRoleId(), user.getId());
+
+            return;
         }
 
         System.out.println("user: " + user);

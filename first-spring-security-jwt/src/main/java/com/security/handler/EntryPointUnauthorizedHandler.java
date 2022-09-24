@@ -15,8 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 用户访问受保护的资源，但是用户没有通过认证则会进入这个处理器
- * 返回json数据，阻止重定向
+ * 用户访问受保护的资源，但是用户没有认证则会进入这个处理器
+ * 屏蔽默认登录页面，即当用户未登录时，不自动跳转到默认的登录页，而是返回用户未登录的错误。用于前后端分离场景
+ * 返回json数据，阻止重定向到默认登录页
  */
 @Component
 @Slf4j
@@ -24,6 +25,6 @@ public class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        ResponseUtils.result(response,new ResponseResult(CodeEnum.FORBIDDEN.getCode(), CodeEnum.FORBIDDEN.getMessage()));
+        ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.NOT_AUTHENTICATION.getCode()).message(Messages.NOT_AUTHENTICATION));
     }
 }

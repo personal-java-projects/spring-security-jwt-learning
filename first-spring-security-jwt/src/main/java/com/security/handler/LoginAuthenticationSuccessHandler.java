@@ -1,5 +1,6 @@
 package com.security.handler;
 
+import com.security.constant.Messages;
 import com.security.enums.CodeEnum;
 import com.security.model.LoginToken;
 import com.security.utils.JwtUtils;
@@ -46,6 +47,6 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
      * 渲染返回 token 数据,因为前端页面接收的都是Result对象，故使用application/json返回
      */
     public void renderToken(HttpServletResponse response, LoginToken token) throws IOException {
-        ResponseUtils.result(response,new ResponseResult(CodeEnum.SUCCESS.getCode(), "登录成功！",token));
+        ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(Messages.LOGIN_SUCCESS).data(token));
     }
 }

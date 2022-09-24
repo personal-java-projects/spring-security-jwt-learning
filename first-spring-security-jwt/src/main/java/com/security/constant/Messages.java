@@ -4,6 +4,8 @@ public class Messages {
 
     public static final String SUCCESS = "请求成功";
 
+    public static final String LOGIN_SUCCESS = "登录成功！";
+
     public static final String LOGIN_FAILURE = "登录失败！";
 
     public static final String PARAMS_ERROR = "参数错误！";

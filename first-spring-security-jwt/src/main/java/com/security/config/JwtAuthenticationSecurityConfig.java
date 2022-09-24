@@ -3,9 +3,9 @@ package com.security.config;
 import com.security.filter.JwtAuthenticationLoginFilter;
 import com.security.handler.LoginAuthenticationFailureHandler;
 import com.security.handler.LoginAuthenticationSuccessHandler;
-import com.security.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -42,6 +42,11 @@ public class JwtAuthenticationSecurityConfig extends SecurityConfigurerAdapter<D
     @Autowired
     private LoginAuthenticationFailureHandler loginAuthenticationFailureHandler;
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     /**
      * 将登录接口的过滤器配置到过滤器链中
      * 1. 配置登录成功、失败处理器
@@ -62,7 +67,7 @@ public class JwtAuthenticationSecurityConfig extends SecurityConfigurerAdapter<D
         // 设置userDetailService
         provider.setUserDetailsService(userDetailsService);
         // 设置加密算法
-        provider.setPasswordEncoder(PasswordUtil.passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder());
         http.authenticationProvider(provider);
         //将这个过滤器添加到UsernamePasswordAuthenticationFilter之前执行
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

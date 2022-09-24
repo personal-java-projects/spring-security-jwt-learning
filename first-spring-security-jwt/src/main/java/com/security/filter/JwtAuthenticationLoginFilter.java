@@ -34,13 +34,11 @@ public class JwtAuthenticationLoginFilter extends AbstractAuthenticationProcessi
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-//        //获取表单提交数据
-//        String username = request.getParameter("username");
-//        String password = request.getParameter("password");
-//        //封装到token中提交
-//        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-//                username,password);
-//        return getAuthenticationManager().authenticate(authRequest);
-        return null;
+        //获取表单提交数据
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        //封装到token中提交
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+        return getAuthenticationManager().authenticate(authRequest);
     }
 }

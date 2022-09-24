@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("")
 public class UserController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class UserController {
         return "这是管理员能查看的";
     }
 
-    @GetMapping("/testU")
+    @GetMapping("/user/testU")
     public String testU() {
         return "这是登录用户能查看的";
     }

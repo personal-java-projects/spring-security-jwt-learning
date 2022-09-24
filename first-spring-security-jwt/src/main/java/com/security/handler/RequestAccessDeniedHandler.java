@@ -21,6 +21,7 @@ public class RequestAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
-        ResponseUtils.result(response,new ResponseResult(CodeEnum.FORBIDDEN.getCode(), CodeEnum.FORBIDDEN.getMessage()));
+
+        ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.FORBIDDEN.getCode()).message(CodeEnum.FORBIDDEN.getMessage()));
     }
 }
