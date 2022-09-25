@@ -113,6 +113,7 @@ public class JwtUtils {
         try {
             Claims claims = getClaimsFromToken(token);
             Date expiration = claims.getExpiration();
+
             return expiration.before(new Date());
         } catch (Exception e) {
             return true;
@@ -145,12 +146,10 @@ public class JwtUtils {
      * @return 是否有效
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
-        if (StringUtils.isEmpty(token)) {
-            throw new BizException(CodeEnum.ACCOUNT_EXPIRED);
-        }
 
         SecurityUser user = (SecurityUser) userDetails;
         String username = getUsernameFromToken(token);
+
         return (username.equals(user.getUsername()) && !isTokenExpired(token));
     }
 

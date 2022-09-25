@@ -31,13 +31,6 @@ public class JwtTokenUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private RoleMapper roleMapper;
-
-
-    private PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
