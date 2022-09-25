@@ -11,6 +11,7 @@
 	<modules>
 		<module>first-spring-security-jwt</module>
         <module>second-spring-security-jwt</module>
+        <module>third-spring-security-jwt</module>
     </modules>
 
 	<parent>
