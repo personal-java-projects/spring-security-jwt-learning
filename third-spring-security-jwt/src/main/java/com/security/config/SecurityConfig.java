@@ -86,5 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 将TOKEN校验过滤器配置到过滤器链中，否则不生效，放到UsernamePasswordAuthenticationFilter之前
         http
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+//        http.addFilterAfter()
     }
 }

@@ -22,8 +22,15 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.security.utils.CaptchaUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -94,6 +101,18 @@ public class UserServiceImpl implements UserService {
         token.put("refresh-token", jwtUtils.refreshToken(jwtUtils.createToken(securityUser)));
 
         return token;
+    }
+
+    /**
+     * 获取验证码
+     *
+     * @param response
+     */
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = Exception.class)
+    @Override
+    public void getRandomCode(HttpServletResponse response) throws IOException {
+        // getRandomCodeImage方法会直接将生成的验证码图片写入response
+        CaptchaUtils.builder().arithmetic().getRandomCodeImage(response);
     }
 
     @Override
