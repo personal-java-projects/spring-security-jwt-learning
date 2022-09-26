@@ -1,6 +1,7 @@
 package com.security.service.impl;
 
 import com.security.constant.Messages;
+import com.security.constant.RedisConstant;
 import com.security.enums.CodeEnum;
 import com.security.exception.BizException;
 import com.security.mapper.RoleMapper;
@@ -12,6 +13,7 @@ import com.security.pojo.RoleUser;
 import com.security.pojo.User;
 import com.security.service.UserService;
 import com.security.utils.JwtUtils;
+import com.security.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -29,6 +31,7 @@ import com.security.utils.CaptchaUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
 
@@ -49,6 +52,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public void registerUser(LoginRegisterForm form) {
@@ -71,6 +77,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Map<String, Object> login(LoginRegisterForm form) {
+
+        String authCode = (String) redisUtil.get(RedisConstant.REDIS_UMS_PREFIX);
+
+        if (authCode == null) {
+            throw new BizException(CodeEnum.BODY_NOT_MATCH.getCode(), Messages.CODE_EXPIRED);
+        }
+
+        if (!authCode.equalsIgnoreCase(form.getCheckCode())) {
+            throw new BizException(CodeEnum.BODY_NOT_MATCH.getCode(), Messages.CODE_ERROR);
+        }
+
         // 用户验证
         Authentication authentication = null;
         try {
@@ -112,7 +129,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void getRandomCode(HttpServletResponse response) throws IOException {
         // getRandomCodeImage方法会直接将生成的验证码图片写入response
-        CaptchaUtils.builder().arithmetic().getRandomCodeImage(response);
+        String randomResult = CaptchaUtils.builder().arithmetic(3).getRandomCodeImage(response);
+        redisUtil.set(RedisConstant.REDIS_UMS_PREFIX, randomResult);
+        redisUtil.expire(RedisConstant.REDIS_UMS_PREFIX, RedisConstant.REDIS_UMS_EXPIRE);
+
+
+        System.out.println("randomResult: " + randomResult);
     }
 
     @Override

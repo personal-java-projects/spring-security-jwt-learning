@@ -8,6 +8,10 @@ public class Messages {
 
     public static final String LOGIN_FAILURE = "登录失败！";
 
+    public static final String CODE_EXPIRED = "验证码已过期！";
+
+    public static final String CODE_ERROR = "验证码错误！";
+
     public static final String NULL_EXCEPTION = "空指针异常";
 
     public static final String PARAMS_ERROR = "参数错误！";

@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 
@@ -26,12 +28,12 @@ public class CaptchaUtils {
     /**
      * @Feild width: 验证码的宽度
      */
-    private int width = 165;
+    private int width = 200;
 
     /**
      * @Feild height: 验证码高度
      */
-    private int height = 45;
+    private int height = 50;
 
     /**
      * @Feild lineSize: 验证码中夹杂的干扰线数量
@@ -51,12 +53,23 @@ public class CaptchaUtils {
     /**
      * @Feild numberString: 验证码数字可选字符
      */
-    private String numberString = "0123456789";
+    private String numberString = "1234567890";
 
     /**
      * @Feild operatorString: 算术运算符可选字符
      */
     private String operatorString = "+-*/";
+
+
+    /**
+     * @Feild computedParams: 运算参数
+     */
+    private List<String> computedParams = new ArrayList<>();
+
+    /**
+     * @Feild computedResult: 运算结果
+     */
+    private BigDecimal computedResult;
 
     public static CaptchaUtils builder() {
         CaptchaUtils captchaUtils = new CaptchaUtils();
@@ -64,9 +77,17 @@ public class CaptchaUtils {
         return captchaUtils;
     }
 
-    public CaptchaUtils arithmetic() {
-        arithmeticOnly = true;
-        randomStrNum = 3;
+    /**
+     * 算术验证码构造器
+     * 每次调用初始化相关参数
+     * @param randomStrNum
+     * @return
+     */
+    public CaptchaUtils arithmetic(int randomStrNum) {
+        this.arithmeticOnly = true;
+        this.randomStrNum = randomStrNum;
+        this.computedParams = new ArrayList<>();
+        this.computedResult = BigDecimal.valueOf(0);
 
         return this;
     }
@@ -129,7 +150,6 @@ public class CaptchaUtils {
 
         numString = numString.equals("") ? "0" : numString;
 
-        System.out.println("numString: " + numString);
 
         return numString;
     }
@@ -140,8 +160,6 @@ public class CaptchaUtils {
         g.setColor(getRandomColor(108, 190));
         //System.out.println(random.nextInt(randomString.length()));
         String rand = "";
-        double computed = 0;
-        List<String> params = new ArrayList<>();
 
         // 当属于算术验证码
         if (arithmeticOnly) {
@@ -151,16 +169,17 @@ public class CaptchaUtils {
                 rand = getOperatorString(random.nextInt(operatorString.length()));
             }
 
-            params.add(rand);
+            if (i == 2 && computedParams.get(i-1).equals("/") && rand.equals("0")) {
+                while (rand.equals("0")) {
+                    rand = getNumberString(random.nextInt(numberString.length()), 3);
+                }
+            }
+
+            computedParams.add(rand);
 
             // 添加=和？
             if (i == randomStrNum - 1) {
-                // 计算结果
-                for (int k = 0; i < params.size(); k++) {
-
-                }
-
-                rand += "=?";
+                rand += " = ?";
             }
         } else {
             rand = getRandomString(random.nextInt(randomString.length()));
@@ -169,7 +188,7 @@ public class CaptchaUtils {
         randomStr += rand;
 
         g.translate(random.nextInt(3), random.nextInt(6));
-        g.drawString(rand, 40 * i + 10, 25);
+        g.drawString(rand, 40 * i + 10, 35);
 
         return randomStr;
     }
@@ -196,12 +215,45 @@ public class CaptchaUtils {
             randomStr = drawString(g, randomStr, i);
         }
 
+
+        // 计算运算结果
+        if (arithmeticOnly) {
+            int param1 = Integer.parseInt(computedParams.get(0));
+            String operate = computedParams.get(1);
+            int param2 = Integer.parseInt(computedParams.get(2));
+
+            switch (operate) {
+                case "+":
+                    // stripTrailingZeros() 去掉末尾的0
+                    computedResult = new BigDecimal(Math.round(param1 + param2)).stripTrailingZeros();
+                    break;
+                case "-":
+                    computedResult = new BigDecimal(Math.round(param1 - param2)).stripTrailingZeros();
+                    break;
+                case "*":
+                    computedResult = new BigDecimal(Math.round(param1 * param2)).stripTrailingZeros();
+                    break;
+                case "/":
+                    computedResult = new BigDecimal((double) param1 / param2).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
+                    break;
+            }
+        }
+
         System.out.println("随机字符："+randomStr);
+        System.out.println("computedResult: " + computedResult);
+
         g.dispose();
 
         Map<String, Object> result = new HashMap<>();
         result.put("image", image);
-        result.put("randomStr", randomStr);
+
+//        if (arithmeticOnly) {
+//            result.put("randomStr", computedResult);
+//        } else {
+//            result.put("randomStr", randomStr);
+//        }
+
+        result.put("randomStr", arithmeticOnly ? computedResult : randomStr);
 
         return result;
     }
@@ -211,7 +263,7 @@ public class CaptchaUtils {
         Map<String, Object> imageInfo = generateImage();
 
         BufferedImage image = (BufferedImage) imageInfo.get("image");
-        String randomStr = (String) imageInfo.get("randomStr");
+        String randomStr = imageInfo.get("randomStr").toString();
         //  将图片以png格式返回,返回的是图片
         ImageIO.write(image, "PNG", response.getOutputStream());
 

@@ -17,6 +17,8 @@ public class LoginRegisterForm {
 
     private Integer roleId;
 
+    private String checkCode;
+
     @SneakyThrows
     public User toUser(LoginRegisterForm form) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
