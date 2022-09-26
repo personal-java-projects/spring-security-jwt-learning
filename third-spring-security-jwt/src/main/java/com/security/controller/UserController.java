@@ -78,4 +78,17 @@ public class UserController {
     public String testG(String username){
         return "PreAuthorize 表达式";
     }
+
+    /**
+     * @sc是我的自定义鉴权服务名
+     * hasPermission(#username)：服务内方法名称和参数
+     * 传参方式需要采用SpEL表达式支持的语法，必须使用#开头，后面接参数名
+     * @param username
+     * @return
+     */
+    @PreAuthorize("@sc.hasPermission(#username)")
+    @GetMapping("/testH")
+    public String testH(String username){
+        return "PreAuthorize 表达式";
+    }
 }
