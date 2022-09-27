@@ -1,5 +1,6 @@
 package com.security.utils;
 
+import com.security.constant.RedisConstant;
 import com.security.enums.CodeEnum;
 import com.security.exception.BizException;
 import com.security.model.SecurityUser;
@@ -7,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,9 @@ public class JwtUtils {
     // 过期时间 毫秒
     private Long expiration;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     public String createToken(String userName){
         return Jwts.builder()
                 .setSubject(userName)
@@ -48,14 +53,22 @@ public class JwtUtils {
         claims.put("username", securityUser.getUsername());
         claims.put("roles", securityUser.getAuthorities());
 
-        return Jwts.builder()
+        // 过期时间
+        Date expireTime = new Date(System.currentTimeMillis() + expiration);
+
+        // 生成token
+        String accessToken = Jwts.builder()
                 .addClaims(claims)
                 //生成时间
                 .setIssuedAt(new Date())
                 //过期时间
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(expireTime)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
+
+        redisUtil.set(RedisConstant.UNIQUE_USER_PREFIX+securityUser.getUsername(), accessToken, expiration);
+
+        return accessToken;
     }
 
     /**
@@ -95,7 +108,7 @@ public class JwtUtils {
         String username;
         try {
             Claims claims = getClaimsFromToken(token);
-            username = claims.getSubject();
+            username = (String) claims.get("username");
         } catch (Exception e) {
             e.printStackTrace();
             username = null;

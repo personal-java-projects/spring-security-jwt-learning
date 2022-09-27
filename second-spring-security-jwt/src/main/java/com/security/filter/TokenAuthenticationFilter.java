@@ -1,8 +1,14 @@
 package com.security.filter;
 
+import com.alibaba.fastjson2.JSON;
+import com.security.constant.Messages;
 import com.security.constant.SecurityConstant;
+import com.security.enums.CodeEnum;
+import com.security.model.SecurityUser;
 import com.security.service.UserService;
 import com.security.utils.JwtUtils;
+import com.security.utils.ResponseResult;
+import com.security.utils.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,7 +58,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             // SecurityContextHolder.getContext().getAuthentication()==null 未认证则为true
             if (!StringUtils.isEmpty(username) && SecurityContextHolder.getContext().getAuthentication()==null){
                 UserDetails userDetails = userService.loadUserByUsername(username);
-                // 如果token有效
 
                 /**
                  * 由于通过controller自定义登录逻辑
@@ -60,6 +65,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                  * 否则spring-security框架不知道用户是否已登录
                  * 导致登录完成之后，无法访问其他接口
                  */
+                // 如果token有效
                 if (jwtUtils.validateToken(token, userDetails)){
                     // 将用户信息存入 authentication，方便后续校验
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,

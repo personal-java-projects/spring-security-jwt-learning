@@ -16,10 +16,10 @@ public class SecurityUser implements UserDetails {
     // 用户id
     private Integer id;
 
-    //用户名
+    // 用户名
     private String username;
 
-    //密码
+    // 密码
     private String password;
 
     //权限+角色集合

@@ -12,6 +12,7 @@ import com.security.model.SecurityUser;
 import com.security.pojo.RoleUser;
 import com.security.pojo.User;
 import com.security.service.UserService;
+import com.security.utils.IdUtils;
 import com.security.utils.JwtUtils;
 import com.security.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,37 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RedisUtil redisUtil;
 
+    /**
+     * 校验验证码
+     * @param checkCode
+     * @return
+     */
+    public void validateCode(String checkCode) {
+        String authCode = (String) redisUtil.get(RedisConstant.REDIS_UMS_PREFIX);
+
+        // 删除redis中的验证码缓存
+        redisUtil.del(RedisConstant.REDIS_UMS_PREFIX);
+
+        if (authCode == null) {
+            throw new BizException(CodeEnum.BODY_NOT_MATCH.getCode(), Messages.CODE_EXPIRED);
+        }
+
+        if (!authCode.equalsIgnoreCase(checkCode)) {
+            throw new BizException(CodeEnum.BODY_NOT_MATCH.getCode(), Messages.CODE_ERROR);
+        }
+    }
+
+    /**
+     * 验证是否已登录
+     */
+    public void validateHasLogin (String username) {
+        String exitedToken = (String) redisUtil.get(RedisConstant.UNIQUE_USER_PREFIX+username);
+
+        if (exitedToken != null && jwtUtils.getUsernameFromToken(exitedToken).equals(username)) {
+            throw new BizException(CodeEnum.BODY_NOT_MATCH.getCode(), Messages.LOGIN_EXITED);
+        }
+    }
+
     @Override
     public void registerUser(LoginRegisterForm form) {
         User user = form.toUser(form);
@@ -78,15 +110,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> login(LoginRegisterForm form) {
 
-        String authCode = (String) redisUtil.get(RedisConstant.REDIS_UMS_PREFIX);
+        // 校验验证码
+        validateCode(form.getCheckCode());
 
-        if (authCode == null) {
-            throw new BizException(CodeEnum.BODY_NOT_MATCH.getCode(), Messages.CODE_EXPIRED);
-        }
-
-        if (!authCode.equalsIgnoreCase(form.getCheckCode())) {
-            throw new BizException(CodeEnum.BODY_NOT_MATCH.getCode(), Messages.CODE_ERROR);
-        }
+        // 验证是否已登录
+        validateHasLogin(form.getUsername());
 
         // 用户验证
         Authentication authentication = null;
@@ -112,10 +140,13 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> token = new HashMap<>();
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
+        String accessToken = jwtUtils.createToken(securityUser);
+        String refreshToken = jwtUtils.refreshToken(jwtUtils.createToken(securityUser));
+
         // 生成token
-        token.put("access-token", jwtUtils.createToken(securityUser));
+        token.put("access-token", accessToken);
         //生成刷新令牌，如果accessToken令牌失效，则使用refreshToken重新获取令牌（refreshToken过期时间必须大于accessToken）
-        token.put("refresh-token", jwtUtils.refreshToken(jwtUtils.createToken(securityUser)));
+        token.put("refresh-token", refreshToken);
 
         return token;
     }
