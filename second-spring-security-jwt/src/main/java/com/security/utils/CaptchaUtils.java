@@ -33,7 +33,7 @@ public class CaptchaUtils {
     /**
      * @Feild height: 验证码高度
      */
-    private int height = 50;
+    private int height = 60;
 
     /**
      * @Feild lineSize: 验证码中夹杂的干扰线数量
@@ -188,7 +188,7 @@ public class CaptchaUtils {
         randomStr += rand;
 
         g.translate(random.nextInt(3), random.nextInt(6));
-        g.drawString(rand, 40 * i + 10, 35);
+        g.drawString(rand, 40 * i + 10, 38);
 
         return randomStr;
     }
