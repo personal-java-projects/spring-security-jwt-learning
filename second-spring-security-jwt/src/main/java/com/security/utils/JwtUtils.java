@@ -1,10 +1,12 @@
 package com.security.utils;
 
 import com.security.constant.RedisConstant;
+import com.security.constant.SecurityConstants;
 import com.security.enums.CodeEnum;
 import com.security.exception.BizException;
 import com.security.model.SecurityUser;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
@@ -12,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -36,7 +37,25 @@ public class JwtUtils {
     @Autowired
     private RedisUtil redisUtil;
 
-    public String createToken(String userName){
+    /**
+     * 校验uuid，不一致则是重新登录
+     * @param securityUser
+     * @return
+     */
+    public boolean checkUUID (SecurityUser securityUser) {
+        String uuid = (String) redisUtil.get(RedisConstant.UNIQUE_USER_PREFIX+securityUser.getUsername());
+
+
+        if (uuid != null && !uuid.equals(securityUser.getUuid())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public String createToken(String userName, boolean isRememberMe) {
+        long expiration = isRememberMe ? SecurityConstants.EXPIRATION_REMEMBER : SecurityConstants.EXPIRATION;
+
         return Jwts.builder()
                 .setSubject(userName)
                 //生成时间
@@ -47,14 +66,17 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String createToken(SecurityUser securityUser){
+    public String createToken(SecurityUser securityUser, boolean isRememberMe){
+        long expiration = isRememberMe ? SecurityConstants.EXPIRATION_REMEMBER : SecurityConstants.EXPIRATION;
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", securityUser.getId());
         claims.put("username", securityUser.getUsername());
         claims.put("roles", securityUser.getAuthorities());
+        claims.put("uuid", securityUser.getUuid());
 
         // 过期时间
-        Date expireTime = new Date(System.currentTimeMillis() + expiration);
+        Date expireTime = new Date(new Date().getTime() + expiration * 1000);
 
         // 生成token
         String accessToken = Jwts.builder()
@@ -66,7 +88,7 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
 
-        redisUtil.set(RedisConstant.UNIQUE_USER_PREFIX+securityUser.getUsername(), accessToken, expiration);
+        redisUtil.set(RedisConstant.UNIQUE_USER_PREFIX+securityUser.getUsername(), securityUser.getUuid(), expiration);
 
         return accessToken;
     }
@@ -89,13 +111,8 @@ public class JwtUtils {
      * @return
      */
     private Claims getClaimsFromToken(String token) {
-        Claims claims;
-        try {
-            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-        } catch (Exception e) {
-            e.printStackTrace();
-            claims = null;
-        }
+        Claims claims = null;
+        claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         return claims;
     }
 
@@ -105,14 +122,8 @@ public class JwtUtils {
      * @return 用户名
      */
     public String getUsernameFromToken(String token) {
-        String username;
-        try {
-            Claims claims = getClaimsFromToken(token);
-            username = (String) claims.get("username");
-        } catch (Exception e) {
-            e.printStackTrace();
-            username = null;
-        }
+        String username = null;
+        username = (String) getClaimsFromToken(token).get("username");
         return username;
     }
 
@@ -122,15 +133,11 @@ public class JwtUtils {
      * @param token 令牌
      * @return 是否过期
      */
-    public Boolean isTokenExpired(String token) {
-        try {
-            Claims claims = getClaimsFromToken(token);
-            Date expiration = claims.getExpiration();
+    public Boolean isTokenExpired(String token) throws ExpiredJwtException {
+        Claims claims = getClaimsFromToken(token);
+        Date expiration = claims.getExpiration();
 
-            return expiration.before(new Date());
-        } catch (Exception e) {
-            return true;
-        }
+        return expiration.before(new Date());
     }
 
     /**
@@ -139,7 +146,8 @@ public class JwtUtils {
      * @param token 原令牌
      * @return 新令牌
      */
-    public String refreshToken(String token) {
+    public String refreshToken(String token, boolean isRememberMe) {
+        long expiration = isRememberMe ? SecurityConstants.EXPIRATION_REMEMBER : SecurityConstants.EXPIRATION;
         String refreshedToken;
         try {
             Claims claims = getClaimsFromToken(token);
@@ -163,7 +171,7 @@ public class JwtUtils {
         SecurityUser user = (SecurityUser) userDetails;
         String username = getUsernameFromToken(token);
 
-        return (username.equals(user.getUsername()) && !isTokenExpired(token));
+        return username.equals(user.getUsername());
     }
 
 

@@ -2,6 +2,7 @@ package com.security.service.impl;
 
 import com.security.constant.Messages;
 import com.security.constant.RedisConstant;
+import com.security.constant.SecurityConstants;
 import com.security.enums.CodeEnum;
 import com.security.exception.BizException;
 import com.security.mapper.RoleMapper;
@@ -32,7 +33,6 @@ import com.security.utils.CaptchaUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
 
@@ -77,17 +77,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /**
-     * 验证是否已登录
-     */
-    public void validateHasLogin (String username) {
-        String exitedToken = (String) redisUtil.get(RedisConstant.UNIQUE_USER_PREFIX+username);
-
-        if (exitedToken != null && jwtUtils.getUsernameFromToken(exitedToken).equals(username)) {
-            throw new BizException(CodeEnum.BODY_NOT_MATCH.getCode(), Messages.LOGIN_EXITED);
-        }
-    }
-
     @Override
     public void registerUser(LoginRegisterForm form) {
         User user = form.toUser(form);
@@ -107,14 +96,26 @@ public class UserServiceImpl implements UserService {
         roleUserMapper.insertRoleUser(roleUser);
     }
 
+    /**
+     * 用户登录时判断是否已经登录的逻辑
+     * @param securityUser
+     */
+    @Override
+    public void checkLogin(SecurityUser securityUser) {
+
+        /**
+         * 当缓存中存在对应uuid，且当前uuid不是缓存中的uuid时，则表示在其它地方用户已登录
+         */
+        if (jwtUtils.checkUUID(securityUser)) {
+            throw new BizException(CodeEnum.LOGIN_EXITED);
+        }
+    }
+
     @Override
     public Map<String, Object> login(LoginRegisterForm form) {
 
         // 校验验证码
         validateCode(form.getCheckCode());
-
-        // 验证是否已登录
-        validateHasLogin(form.getUsername());
 
         // 用户验证
         Authentication authentication = null;
@@ -140,8 +141,8 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> token = new HashMap<>();
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
-        String accessToken = jwtUtils.createToken(securityUser);
-        String refreshToken = jwtUtils.refreshToken(jwtUtils.createToken(securityUser));
+        String accessToken = jwtUtils.createToken(securityUser, false);
+        String refreshToken = jwtUtils.refreshToken(accessToken, false);
 
         // 生成token
         token.put("access-token", accessToken);
@@ -159,13 +160,9 @@ public class UserServiceImpl implements UserService {
     @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = Exception.class)
     @Override
     public void getRandomCode(HttpServletResponse response) throws IOException {
-        // getRandomCodeImage方法会直接将生成的验证码图片写入response
+        // getRandomCodeImage方法会直接将生成的验证码图片写入response，3代表算术验证码只有两个因子
         String randomResult = CaptchaUtils.builder().arithmetic(3).getRandomCodeImage(response);
-        redisUtil.set(RedisConstant.REDIS_UMS_PREFIX, randomResult);
-        redisUtil.expire(RedisConstant.REDIS_UMS_PREFIX, RedisConstant.REDIS_UMS_EXPIRE);
-
-
-        System.out.println("randomResult: " + randomResult);
+        redisUtil.set(RedisConstant.REDIS_UMS_PREFIX, randomResult, RedisConstant.REDIS_UMS_EXPIRE);
     }
 
     @Override
@@ -182,6 +179,9 @@ public class UserServiceImpl implements UserService {
         securityUser.setUsername(user.getUsername());
         //todo 此处为了方便，直接在数据库存储的明文，实际生产中应该存储密文，则这里不用再次加密
         securityUser.setPassword(user.getPassword());
+        securityUser.setUuid(IdUtils.fastUUID());
+        securityUser.setLoginTime(new Date().getTime());
+        securityUser.setExpireTime(new Date().getTime() + SecurityConstants.EXPIRATION * 1000);
         List<RoleUser> roleUserList = roleUserMapper.selectRoleUserByUserId(user.getId());
         List<String> roleList = new ArrayList<>();
         String[] authoritiesArray = {};

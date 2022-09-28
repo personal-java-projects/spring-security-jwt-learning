@@ -24,5 +24,4 @@ spring:
 mybatis:
   mapper-locations: classpath*:/mapper/*.xml
 jwt:
-  secret: 1a2b3c4d5e6f
-  expiration: 60000000
+  secret: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w

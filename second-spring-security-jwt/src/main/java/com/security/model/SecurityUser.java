@@ -22,6 +22,15 @@ public class SecurityUser implements UserDetails {
     // 密码
     private String password;
 
+    // 用户的uuid，用于禁止用于多端登录
+    private String uuid;
+
+    // 用户登录时间
+    private Long loginTime;
+
+    // token失效时间
+    private Long expireTime;
+
     //权限+角色集合
     private Collection<? extends GrantedAuthority> authorities;
 

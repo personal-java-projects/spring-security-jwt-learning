@@ -29,6 +29,14 @@ public class AuthController {
         return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage());
     }
 
+    @PostMapping("/checkLogin")
+    public ResponseResult checkLogin(@RequestBody LoginRegisterForm form) {
+        UserDetails userDetails = userService.loadUserByUsername(form.getUsername());
+        userService.checkLogin((SecurityUser) userDetails);
+
+        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode());
+    }
+
     @PostMapping("/login")
     public ResponseResult login(@RequestBody LoginRegisterForm form) {
 
