@@ -14,6 +14,7 @@ import com.security.utils.ResponseResult;
 import com.security.utils.ResponseUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -71,11 +72,20 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 if (!StringUtils.isEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
                     SecurityUser securityUser = (SecurityUser) userService.loadUserByUsername(username);
                     securityUser.setUuid(jwtUtils.getUUIDFromToken(token));
+                    securityUser.setExpireTime(jwtUtils.getExpireTimeFromToken(token));
+
+                    // 如果token在黑名单中，则禁止访问
+                    if  (redisUtil.get(RedisConstant.TOKEN_JTI+username) != null) {
+                        ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.ACCOUNT_EXPIRED.getCode()).message(CodeEnum.ACCOUNT_EXPIRED.getMessage()));
+
+                        // 直接继续执行下一个过滤器
+                        chain.doFilter(request,response);
+                    }
 
                     // 校验uuid，如果已登录，则将当前token加入黑名单
                     if (jwtUtils.checkUUID(securityUser)) {
                         // 计算还剩多少过期时间，并加入黑名单
-                        if (jwtUtils.isTokenExpired(token)) {
+                        if (!jwtUtils.isTokenExpired(token)) {
                             long leaveExpireTime = ((securityUser).getExpireTime() - new Date().getTime()) / 1000;
                             System.out.println("leaveExpireTime: " + leaveExpireTime);
 
@@ -83,6 +93,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                         }
 
                         ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.LOGIN_EXITED.getCode()).message(CodeEnum.LOGIN_EXITED.getMessage()));
+
+                        // 提前执行下一个过滤器
+                        chain.doFilter(request, response);
                     }
 
                     /**
@@ -105,6 +118,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     e.printStackTrace();
 //                    String username = String.valueOf(((ExpiredJwtException) e).getClaims());
                     ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.ACCOUNT_EXPIRED.getCode()).message(CodeEnum.ACCOUNT_EXPIRED.getMessage()));
+                }
+
+                // token签名验证不通过
+                if (e instanceof SignatureException) {
+                    e.printStackTrace();
+
+                    ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.SIGNATURE_NOT_MATCH.getCode()).message(CodeEnum.SIGNATURE_NOT_MATCH.getMessage()));
                 }
             }
         }

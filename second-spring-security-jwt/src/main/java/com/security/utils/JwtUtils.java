@@ -75,6 +75,8 @@ public class JwtUtils {
         claims.put("username", securityUser.getUsername());
         claims.put("roles", securityUser.getAuthorities());
         claims.put("uuid", securityUser.getUuid());
+        claims.put("loginTime", securityUser.getLoginTime());
+        claims.put("expireTime", securityUser.getExpireTime());
 
         // 过期时间
         Date expireTime = new Date(new Date().getTime() + expiration * 1000);
@@ -139,6 +141,13 @@ public class JwtUtils {
         return uuid;
     }
 
+    public Long getExpireTimeFromToken(String token) {
+        long expireTime = 0L;
+        expireTime = (long) getClaimsFromToken(token).get("expireTime");
+
+        return expireTime;
+    }
+
     /**
      * 判断令牌是否过期
      *
@@ -149,7 +158,9 @@ public class JwtUtils {
         Claims claims = getClaimsFromToken(token);
         Date expiration = claims.getExpiration();
 
-        return expiration.before(new Date());
+        boolean before = expiration.before(new Date());
+
+        return before;
     }
 
     /**
