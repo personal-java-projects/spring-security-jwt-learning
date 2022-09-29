@@ -140,6 +140,8 @@ public class UserServiceImpl implements UserService {
 
         Map<String, Object> token = new HashMap<>();
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+        securityUser.setLoginTime(new Date().getTime());
+        securityUser.setExpireTime(new Date().getTime() + SecurityConstants.EXPIRATION * 1000);
 
         String accessToken = jwtUtils.createToken(securityUser, false);
         String refreshToken = jwtUtils.refreshToken(accessToken, false);
@@ -180,9 +182,6 @@ public class UserServiceImpl implements UserService {
         securityUser.setUsername(user.getUsername());
         //todo 此处为了方便，直接在数据库存储的明文，实际生产中应该存储密文，则这里不用再次加密
         securityUser.setPassword(user.getPassword());
-        securityUser.setUuid(IdUtils.fastUUID());
-        securityUser.setLoginTime(new Date().getTime());
-        securityUser.setExpireTime(new Date().getTime() + SecurityConstants.EXPIRATION * 1000);
         List<RoleUser> roleUserList = roleUserMapper.selectRoleUserByUserId(user.getId());
         List<String> roleList = new ArrayList<>();
         String[] authoritiesArray = {};

@@ -70,6 +70,7 @@ public class JwtUtils {
         long expiration = isRememberMe ? SecurityConstants.EXPIRATION_REMEMBER : SecurityConstants.EXPIRATION;
 
         Map<String, Object> claims = new HashMap<>();
+        securityUser.setUuid(IdUtils.fastUUID());
         claims.put("userId", securityUser.getId());
         claims.put("username", securityUser.getUsername());
         claims.put("roles", securityUser.getAuthorities());
@@ -125,6 +126,17 @@ public class JwtUtils {
         String username = null;
         username = (String) getClaimsFromToken(token).get("username");
         return username;
+    }
+
+    /**
+     * 获取token负载中的uuid,用于和缓存中的uuid比较，校验当前登录用户是否已登录
+     * @param token
+     * @return
+     */
+    public String getUUIDFromToken(String token) {
+        String uuid = null;
+        uuid = (String) getClaimsFromToken(token).get("uuid");
+        return uuid;
     }
 
     /**

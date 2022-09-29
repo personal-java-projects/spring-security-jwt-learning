@@ -69,16 +69,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
                 // SecurityContextHolder.getContext().getAuthentication()==null 未认证则为true
                 if (!StringUtils.isEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userService.loadUserByUsername(username);
+                    SecurityUser securityUser = (SecurityUser) userService.loadUserByUsername(username);
+                    securityUser.setUuid(jwtUtils.getUUIDFromToken(token));
 
                     // 校验uuid，如果已登录，则将当前token加入黑名单
-                    if (jwtUtils.checkUUID((SecurityUser) userDetails)) {
+                    if (jwtUtils.checkUUID(securityUser)) {
                         // 计算还剩多少过期时间，并加入黑名单
                         if (jwtUtils.isTokenExpired(token)) {
-                            long leaveExpireTime = (((SecurityUser) userDetails).getExpireTime() - new Date().getTime()) / 1000;
+                            long leaveExpireTime = ((securityUser).getExpireTime() - new Date().getTime()) / 1000;
                             System.out.println("leaveExpireTime: " + leaveExpireTime);
 
-                            redisUtil.set(RedisConstant.TOKEN_JTI+username, ((SecurityUser) userDetails).getUuid(), leaveExpireTime);
+                            redisUtil.set(RedisConstant.TOKEN_JTI+username, (securityUser).getUuid(), leaveExpireTime);
                         }
 
                         ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.LOGIN_EXITED.getCode()).message(CodeEnum.LOGIN_EXITED.getMessage()));
@@ -90,10 +91,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                      * 否则spring-security框架不知道用户是否已登录
                      * 导致登录完成之后，无法访问其他接口
                      */
-                    if (jwtUtils.validateToken(token, userDetails)){
+                    if (jwtUtils.validateToken(token, securityUser)){
                         // 将用户信息存入 authentication，方便后续校验
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-                                userDetails.getAuthorities());
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null,
+                                securityUser.getAuthorities());
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         // 将 authentication 存入 ThreadLocal，方便后续获取用户信息
                         SecurityContextHolder.getContext().setAuthentication(authentication);
