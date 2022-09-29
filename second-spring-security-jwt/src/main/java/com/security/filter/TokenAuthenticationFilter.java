@@ -76,7 +76,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
                     // 如果token在黑名单中，则禁止访问
                     if  (redisUtil.get(RedisConstant.TOKEN_JTI+username) != null) {
-                        ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.ACCOUNT_EXPIRED.getCode()).message(CodeEnum.ACCOUNT_EXPIRED.getMessage()));
+                        ResponseUtils.result(response, ResponseResult.builder().code(CodeEnum.LOGIN_EXITED.getCode()).message(CodeEnum.LOGIN_EXITED.getMessage()));
 
                         // 直接继续执行下一个过滤器
                         chain.doFilter(request,response);
