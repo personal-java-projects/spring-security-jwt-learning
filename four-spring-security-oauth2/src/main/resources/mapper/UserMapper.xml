@@ -29,4 +29,8 @@
             </if>
         </where>
     </select>
+
+    <select id="selectAllUsers" resultType="com.security.pojo.User">
+        <include refid="selectAllProperties"></include>
+    </select>
 </mapper>

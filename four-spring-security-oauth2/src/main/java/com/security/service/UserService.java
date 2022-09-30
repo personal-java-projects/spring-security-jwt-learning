@@ -1,13 +1,20 @@
 package com.security.service;
 
 import com.security.model.LoginRegisterForm;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import com.security.pojo.Role;
+import com.security.pojo.User;
 
-import java.util.Map;
+import java.util.List;
 
-public interface UserService extends UserDetailsService {
+/**
+ * 描述：UserService接口
+ */
+public interface UserService {
+    Object getAllUsers();
 
-    void registerUser(LoginRegisterForm form);
+    User getUserByUserName(String username);
 
-    Map<String, Object> login(LoginRegisterForm form);
+    void save(LoginRegisterForm form);
+
+    List<Role> getRolesByUserId(Integer userId);
 }
