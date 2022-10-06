@@ -43,8 +43,8 @@ public class AuthorizationServerConfig
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("password")
-                //授权模式为"password"和"refresh_token"
-                .authorizedGrantTypes("grant-code", "password","refresh_token")
+                //授权模式为"authorization_code(授权码模式)"、"password(密码模式)"、"client_credentials(客户端模式)"、"refresh_token(支持刷新token)"
+                .authorizedGrantTypes("authorization_code", "password", "client_credentials", "refresh_token")
                 // 配置access_token的过期时间
                 .accessTokenValiditySeconds(1800)
                 //配置资源id
