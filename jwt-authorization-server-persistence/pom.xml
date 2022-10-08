@@ -4,27 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>study</artifactId>
-        <groupId>com.com.security</groupId>
+        <groupId>com.security</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>third-spring-com.security-jwt</artifactId>
+    <artifactId>jwt-authorization-server-persistence</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>com.com.security.Application</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

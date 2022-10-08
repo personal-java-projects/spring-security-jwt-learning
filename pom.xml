@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<groupId>com.security</groupId>
+	<groupId>com.com.security</groupId>
 	<artifactId>study</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<modelVersion>4.0.0</modelVersion>
@@ -17,7 +17,8 @@
 		<module>resource-server</module>
 		<module>jwt-authorization-server</module>
 		<module>jwt-resource-server</module>
-    </modules>
+        <module>jwt-authorization-server-persistence</module>
+	</modules>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

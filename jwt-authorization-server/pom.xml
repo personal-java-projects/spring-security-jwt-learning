@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>study</artifactId>
-        <groupId>com.security</groupId>
+        <groupId>com.com.security</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -22,7 +22,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.security.AuthorizationServerApplication</mainClass>
+                    <mainClass>com.com.security.AuthorizationServerApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

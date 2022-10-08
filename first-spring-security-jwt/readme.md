@@ -1,4 +1,4 @@
-# 第一版 spring-security + jwt
+# 第一版 spring-com.security + jwt
 ## 实现：
 作为用来熟悉spring-security的开发的版本，一共混杂了两种实现方式。因为我一直想抛弃spring-security框架提供的默认的登录接口，实现通过controller
 进行自定义登录逻辑开发。之前看了一些教程，误以为必须要配置http.formLogin().loginPage().loginProcessUrl()。
