@@ -13,6 +13,8 @@
         <module>second-spring-security-jwt</module>
         <module>third-spring-security-jwt</module>
         <module>four-spring-security-oauth2</module>
+		<module>authorization-server</module>
+		<module>resource-server</module>
     </modules>
 
 	<parent>
