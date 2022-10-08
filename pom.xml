@@ -15,6 +15,8 @@
         <module>four-spring-security-oauth2</module>
 		<module>authorization-server</module>
 		<module>resource-server</module>
+		<module>jwt-authorization-server</module>
+		<module>jwt-resource-server</module>
     </modules>
 
 	<parent>
