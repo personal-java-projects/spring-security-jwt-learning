@@ -1,61 +1,24 @@
 package com.security.service.impl;
 
-import com.security.mapper.RoleMapper;
-import com.security.mapper.RoleUserMapper;
-import com.security.mapper.UserMapper;
-import com.security.model.LoginRegisterForm;
-import com.security.pojo.Role;
-import com.security.pojo.RoleUser;
 import com.security.pojo.User;
 import com.security.service.UserService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 描述：UserServiceImpl
  */
 @Service
 public class UserServiceImpl implements UserService {
-    @Resource
-    private UserMapper userMapper;
-
-    @Resource
-    private RoleUserMapper roleUserMapper;
-
-    @Resource
-    private RoleMapper roleMapper;
 
     @Override
-    public Object getAllUsers() {
-        List<User> users = userMapper.selectAllUsers();
-        return users;
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        String password = new BCryptPasswordEncoder().encode("123456");
+
+        // 这里返回的用户名和密码即登录时候用到的
+        return new User("admin", password);
     }
-
-    @Override
-    public User getUserByUserName(String username) {
-        return userMapper.selectUserByUsername(username);
-    }
-
-    @Override
-    public void save(LoginRegisterForm form) {
-        userMapper.insertUser(form.toUser(form));
-    }
-
-    @Override
-    public List<Role> getRolesByUserId(Integer userId) {
-        List<RoleUser> roleUsers = roleUserMapper.selectRoleUserByUserId(userId);
-        List<Role> roleList = new ArrayList<>();
-
-        for (RoleUser roleUser:roleUsers) {
-           Role role = roleMapper.selectRoleById(roleUser.getRoleId());
-
-           roleList.add(role);
-        }
-
-        return roleList;
-    }
-
 }

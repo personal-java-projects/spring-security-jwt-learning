@@ -1,25 +1,15 @@
 package com.security.controller;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api")
 public class HelloController {
-    @GetMapping("/admin/hello")
-    public String admin(){
-        return "Hello admin!";
+
+    @RequestMapping("/hello")
+    public String hello() {
+        return "Hello Oauth2 Resource Server";
     }
 
-    @GetMapping("user/hello")
-    public String user(){
-        return "user admin!";
-    }
-
-    @GetMapping("hello")
-    public String hello(){
-        return "Hello!";
-    }
 }
