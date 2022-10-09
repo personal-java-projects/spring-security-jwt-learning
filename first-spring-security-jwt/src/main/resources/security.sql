@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 50738
  Source Host           : localhost:3306
- Source Schema         : com.security
+ Source Schema         : com.com.security
 
  Target Server Type    : MySQL
  Target Server Version : 50738

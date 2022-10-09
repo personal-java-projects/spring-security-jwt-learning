@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.com.security.mapper.RoleUserMapper">
-    <insert id="insertRoleUser" parameterType="com.com.security.pojo.RoleUser">
+<mapper namespace="com.com.com.security.mapper.RoleUserMapper">
+    <insert id="insertRoleUser" parameterType="com.com.com.security.pojo.RoleUser">
         <selectKey keyProperty="roleId" resultType="integer" order="AFTER">
             select LAST_INSERT_ID()
         </selectKey>
@@ -13,7 +13,7 @@
     <sql id="selectAllProperties">
         select * from role_user
     </sql>
-    <select id="selectRoleUserByUserId" parameterType="integer" resultType="com.com.security.pojo.RoleUser">
+    <select id="selectRoleUserByUserId" parameterType="integer" resultType="com.com.com.security.pojo.RoleUser">
         <include refid="selectAllProperties"></include>
         <where>
             <if test="userId != null">

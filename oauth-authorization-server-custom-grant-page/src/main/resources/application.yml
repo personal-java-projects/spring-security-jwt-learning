@@ -1,7 +1,9 @@
 server:
-  port: 8002
+  port: 8001
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   redis:
     database: 0 # Redis 数据库索引（默认为 0）
     host: localhost # Redis 服务器地址
@@ -18,3 +20,7 @@ spring:
     url: jdbc:mysql://localhost:3306/oauth2
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+  thymeleaf:
+    prefix: classpath:/static/
+    suffix: .html
+    cache: false
