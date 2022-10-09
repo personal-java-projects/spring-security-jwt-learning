@@ -21,6 +21,6 @@ spring:
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
   thymeleaf:
-    prefix: classpath:/static/
+    prefix: classpath:/static/html
     suffix: .html
     cache: false

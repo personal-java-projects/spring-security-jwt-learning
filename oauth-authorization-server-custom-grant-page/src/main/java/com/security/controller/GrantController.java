@@ -26,7 +26,8 @@ public class GrantController {
     public ModelAndView getAccessConfirmation(Map<String, Object> model, HttpServletRequest request) throws Exception {
         AuthorizationRequest authorizationRequest = (AuthorizationRequest) model.get("authorizationRequest");
         ModelAndView view = new ModelAndView();
-        view.setViewName("/grant");
+//        view.setViewName("/html/grant.html"); // 没使用thymeleaf，且未配置视图解析器，在这里需要使用完整路径
+        view.setViewName("/grant"); // 使用thymeleaf，grant前面不能少了`/`，且已经在application.yml中配置了thymeleaf的视图解析器
         view.addObject("clientId", authorizationRequest.getClientId());
         view.addObject("scopes", authorizationRequest.getScope());
         return view;
