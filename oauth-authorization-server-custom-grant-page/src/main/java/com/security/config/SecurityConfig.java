@@ -30,9 +30,11 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .formLogin()
+                .loginPage("/base-login.html")
+                .loginProcessingUrl("/login")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/oauth/**", "/login").permitAll()
+                .antMatchers("/oauth/**", "/login", "/base-login.html").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();
