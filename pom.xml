@@ -13,7 +13,11 @@
         <module>second-spring-security-jwt</module>
         <module>third-spring-security-jwt</module>
         <module>four-spring-security-oauth2</module>
-    </modules>
+        <module>spring-oauth2-authorization-server-authorization-code</module>
+        <module>spring-oauth2-resource-server-authorization-code</module>
+        <module>spring-oauth2-authorization-server-password</module>
+		<module>spring-oauth2-resource-server-password</module>
+	</modules>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
