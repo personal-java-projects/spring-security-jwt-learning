@@ -1,0 +1,6 @@
+## 坑点
+
+application.yml的thymeleaf配置将/static/html目录改成了thymeleaf的模板目录，导致内部的html文件其实不是静态资源，而是thymeleaf的模板文件。
+需要通过ModelAndView去进行转换成springboot能够识别的静态资源。
+
+springboot的默认的静态资源目录是resources目录下的static目录。

@@ -32,4 +32,20 @@ public class GrantController {
         view.addObject("scopes", authorizationRequest.getScope());
         return view;
     }
+
+    /**
+     * base-login.html由模板转成springboot能识别的静态资源
+     * @param model
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/base-login")
+    public ModelAndView login(Map<String, Object> model, HttpServletRequest request) throws Exception {
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.setViewName("/base-login");
+
+        return modelAndView;
+    }
 }

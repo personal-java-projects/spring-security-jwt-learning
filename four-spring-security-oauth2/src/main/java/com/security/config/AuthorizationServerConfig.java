@@ -24,34 +24,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Resource
     private AuthenticationManager authorizationManager;
 
-<<<<<<< HEAD
-    // 指定密码的加密方式
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        // 使用BCrypt强哈希函数加密方案（密钥迭代次数默认为10）
-        return new BCryptPasswordEncoder();
-    }
-
-    //配置password授权模式
-    @Override
-    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                .withClient("password")
-                //授权模式为"authorization_code(授权码模式)"、"password(密码模式)"、"client_credentials(客户端模式)"、"refresh_token(支持刷新token)"
-                .authorizedGrantTypes("authorization_code", "password", "client_credentials", "refresh_token")
-                // 配置access_token的过期时间
-                .accessTokenValiditySeconds(1800)
-                //配置资源id
-                .resourceIds("rid")
-                .scopes("all")
-                //123加密后的密码
-                .secret("$2a$10$RMuFXGQ5AtH4wOvkUqyvuecpqUSeoxZYqilXzbz50dceRsga.WYiq");
-
-    }
-=======
     @Resource
     private UserService userService;
->>>>>>> aef4d4288b93119b15d2551ec5638fc891858c75
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {

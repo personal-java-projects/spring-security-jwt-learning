@@ -13,19 +13,12 @@
         <module>second-spring-security-jwt</module>
         <module>third-spring-security-jwt</module>
         <module>four-spring-security-oauth2</module>
-<<<<<<< HEAD
-        <module>spring-oauth2-authorization-server-authorization-code</module>
-        <module>spring-oauth2-resource-server-authorization-code</module>
-        <module>spring-oauth2-authorization-server-password</module>
-		<module>spring-oauth2-resource-server-password</module>
-=======
 		<module>authorization-server</module>
 		<module>resource-server</module>
 		<module>jwt-authorization-server</module>
 		<module>jwt-resource-server</module>
         <module>jwt-authorization-server-persistence</module>
 		<module>oauth-authorization-server-custom-grant-page</module>
->>>>>>> aef4d4288b93119b15d2551ec5638fc891858c75
 	</modules>
 
 	<parent>
