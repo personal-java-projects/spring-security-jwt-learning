@@ -66,7 +66,8 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
                 .authenticationManager(authorizationManager)
                 // 刷新令牌的时候需要用户信息
                 .userDetailsService(userService)
-                .pathMapping("/oauth/confirm_access", "/auth/confirm_access");
+                .pathMapping("/oauth/confirm_access", "/auth/confirm_access")
+                .pathMapping("/oauth/token","/auth/token");
 
         //整合JWT
         if (jwtAccessTokenConverter != null && jwtTokenEnhancer != null) {
