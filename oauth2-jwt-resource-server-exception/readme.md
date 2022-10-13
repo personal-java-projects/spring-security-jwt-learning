@@ -1,0 +1,4 @@
+## 资源服务器scope权限控制
+
+资源服务器通过hasAnyScope配置了scope权限控制，这样认证服务器拿到的token如果scope不对，也无法获取对应的资源。
+配置方法和security的HttpSecurity的方式一致

@@ -19,6 +19,8 @@
 		<module>jwt-resource-server</module>
         <module>jwt-authorization-server-persistence</module>
 		<module>oauth-authorization-server-custom-grant-page</module>
+        <module>oauth2-jwt-authorization-server-exception</module>
+		<module>oauth2-jwt-resource-server-exception</module>
 	</modules>
 
 	<parent>
