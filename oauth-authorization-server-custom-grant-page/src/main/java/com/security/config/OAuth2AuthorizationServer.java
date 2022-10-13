@@ -52,12 +52,6 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
     @Resource
     private TokenStore jwtTokenStore;
 
-    @Bean
-    public TokenStore tokenStore() {
-        RedisTokenStore redis = new RedisTokenStore(connectionFactory);
-        return redis;
-    }
-
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
