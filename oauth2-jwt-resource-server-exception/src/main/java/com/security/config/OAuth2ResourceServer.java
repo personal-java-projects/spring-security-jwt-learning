@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 /**
  * 资源服务器
  * 优先级高于security
+ * OAuth2AuthenticationProcessingFilter
  */
 @Configuration
 @EnableResourceServer
@@ -74,16 +75,23 @@ public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
 
-        // /api/** 接口登录后即可访问
-        http.authorizeRequests()
-                // /user/getUserInfo 接口的scope必须是 user_base、user_userInfo其中之一
-                .antMatchers("/user/getUserInfo").access("#oauth2.hasAnyScope('user_base', 'user_userInfo')")
-                // /api/** 接口的scope必须是all
-                .antMatchers("/api/**").access("#oauth2.hasAnyScope('all')")
-                .anyRequest().authenticated()
-                .and()
-                // 禁用登录
-                .formLogin().disable();
+//        // /api/** 接口登录后即可访问
+//        http.authorizeRequests()
+//                // /user/getUserInfo 接口的scope必须是 user_base、user_userInfo其中之一
+//                .antMatchers("/user/getUserInfo").access("#oauth2.hasAnyScope('user_base', 'user_userInfo')")
+//                // /api/** 接口的scope必须是all
+//                .antMatchers("/api/**").access("#oauth2.hasAnyScope('all')")
+//                .anyRequest().authenticated();
+
+        http.antMatcher("/user/**").authorizeRequests()
+                .antMatchers("/user/getUserInfo").access("#oauth2.hasAnyScope('user_base', 'user_userInfo')");
+
+        // oauth2 授权后即可访问
+        http.antMatcher("/**")
+                .authorizeRequests()
+                .antMatchers("/api/**")
+//                .access("#oauth2.hasAnyScope('all')");
+                .access("#oauth2.isOAuth()");
     }
 
 }

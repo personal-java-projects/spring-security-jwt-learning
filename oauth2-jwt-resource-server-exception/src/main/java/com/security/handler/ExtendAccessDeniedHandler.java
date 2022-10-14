@@ -2,16 +2,21 @@ package com.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.security.utils.BaseResult;
+import com.security.utils.ResponseUtils;
+import org.apache.tomcat.util.http.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.common.exceptions.InsufficientScopeException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class ExtendAccessDeniedHandler implements AccessDeniedHandler {
@@ -21,18 +26,18 @@ public class ExtendAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
 
-        // 自定义返回格式内容
-        BaseResult baseResult = new BaseResult();
-        baseResult.setSuccess(false);
-        baseResult.setMessage("认证过的用户访问无权限资源时的异常");
-        baseResult.setDetailMessage(accessDeniedException.getMessage());
+        Throwable cause = accessDeniedException.getCause();
 
-        response.setStatus(HttpStatus.OK.value());
-        response.setCharacterEncoding("utf-8");
-        response.setHeader("Content-Type", "application/json;charset=UTF-8");
-        response.setStatus(HttpStatus.FORBIDDEN.value());// 权限不足403
-        response.getWriter().write(new ObjectMapper().writeValueAsString(baseResult));
+        if (cause instanceof InsufficientScopeException) {
+            Map<String, Object> map = new HashMap<>(4);
 
+            InsufficientScopeException insufficientScopeException = (InsufficientScopeException) cause;
+            Map<String, String> additionalInformation = insufficientScopeException.getAdditionalInformation();
+            String scope = additionalInformation.get("scope");
+            map.put("message", String.format("所需scope为: %s", scope));
+
+            ResponseUtils.response(response, map);
+        }
     }
 }
 

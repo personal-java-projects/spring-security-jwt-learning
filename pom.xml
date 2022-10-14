@@ -21,7 +21,8 @@
 		<module>oauth-authorization-server-custom-grant-page</module>
         <module>oauth2-jwt-authorization-server-exception</module>
 		<module>oauth2-jwt-resource-server-exception</module>
-	</modules>
+        <module>oauth2-authorization-server-custom-controller-mysql</module>
+    </modules>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
