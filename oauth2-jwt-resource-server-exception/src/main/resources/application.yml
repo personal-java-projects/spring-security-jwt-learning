@@ -18,3 +18,6 @@ spring:
     url: jdbc:mysql://localhost:3306/oauth2
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  mapper-locations: classpath*:/mapper/*.xml

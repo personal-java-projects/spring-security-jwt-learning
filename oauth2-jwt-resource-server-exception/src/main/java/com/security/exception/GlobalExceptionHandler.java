@@ -5,6 +5,7 @@ import com.security.enums.CodeEnum;
 import com.security.utils.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -50,6 +51,22 @@ public class GlobalExceptionHandler {
         response.setStatus(CodeEnum.BODY_NOT_MATCH.getCode());
 
         return ResponseResult.builder().code(CodeEnum.BODY_NOT_MATCH.getCode()).message(Messages.NULL_EXCEPTION);
+    }
+
+    /**
+     * 参数校验的异常
+     * @param req
+     * @param response
+     * @param e
+     * @return
+     */
+    @ResponseBody
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseResult handle(HttpServletRequest req, HttpServletResponse response, MethodArgumentNotValidException e) {
+
+        response.setStatus(CodeEnum.BODY_NOT_MATCH.getCode());
+
+        return ResponseResult.builder().code(CodeEnum.INTERNAL_SERVER_ERROR.getCode()).message(e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
 

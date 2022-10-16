@@ -32,7 +32,9 @@ public class ClientServiceImpl implements ClientService {
             throw new Exception("clientId已存在");
         }
 
-//        clientDetail = clientDetailModel.toClientDetail(clientDetailModel);
+        clientDetail = clientDetailForm.toClientDetail(clientDetailForm);
+
+        System.out.println("clientDetail: " + clientDetail);
 //
 //        String clientId = clientDetailMapper.insertClientDetail(clientDetail);
 

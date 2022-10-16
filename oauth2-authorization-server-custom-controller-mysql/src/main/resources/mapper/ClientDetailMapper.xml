@@ -18,10 +18,6 @@
     </sql>
     <select id="selectClientDetailByClientId" parameterType="string" resultType="com.security.pojo.ClientDetail">
         <include refid="selectAllProperties"></include>
-        <where>
-            <if test="clientId != null">
-                client_id = #{clientId}
-            </if>
-        </where>
+        where client_id = #{clientId}
     </select>
 </mapper>

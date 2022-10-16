@@ -103,9 +103,11 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-        oauthServer.tokenKeyAccess("permitAll()")
+        oauthServer
+                .tokenKeyAccess("permitAll()")
                 // 将checkTokenAccess的权限设置为isAuthenticated，认证通过才可以访问。
                 .checkTokenAccess("isAuthenticated()")
+                // 允许客户端访问OAuth2授权接口，否则返回401
                 .allowFormAuthenticationForClients();
     }
 

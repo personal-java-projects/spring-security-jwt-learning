@@ -98,7 +98,8 @@ public class GrantController {
     }
 
     @PostMapping("/token")
-    public ResponseEntity postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+    @ResponseBody
+    public ResponseResult postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         OAuth2AccessToken accessToken = tokenEndpoint.postAccessToken(principal, parameters).getBody();
 
         Map<String, Object> resultMap = new HashMap<>();
@@ -113,17 +114,20 @@ public class GrantController {
 
         OAuth2Authentication authentication = tokenStore.readAuthentication(accessToken);
         Authentication userAuthentication = authentication.getUserAuthentication();
-        Collection<? extends GrantedAuthority> authorities = userAuthentication.getAuthorities();
-        // 权限信息
-        List<String> list = new ArrayList<>();
-        for (GrantedAuthority authority : authorities) {
-            list.add(authority.getAuthority());
+
+        if (userAuthentication != null) {
+            Collection<? extends GrantedAuthority> authorities = userAuthentication.getAuthorities();
+            // 权限信息
+            List<String> list = new ArrayList<>();
+            for (GrantedAuthority authority : authorities) {
+                list.add(authority.getAuthority());
+            }
+
+            resultMap.put("authorities", list);
         }
 
-        resultMap.put("authorities", list);
 
-
-        return ResponseEntity.ok(resultMap);
+        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(resultMap);
     }
 
     @RequestMapping("/loginFail")
