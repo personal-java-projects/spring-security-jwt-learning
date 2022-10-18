@@ -20,7 +20,7 @@ import java.io.IOException;
 
 /**
  * 登录成功操作
- * 使用 controller 登录接口，经调试，发现未走该处理器
+ * 使用 自定义controller 登录接口，经调试，发现未走该处理器
  */
 @Component
 @Slf4j

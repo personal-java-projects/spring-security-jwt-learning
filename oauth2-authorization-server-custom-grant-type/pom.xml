@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>oauth2-authorization-server-custom-controller-mysql</artifactId>
+    <artifactId>oauth2-authorization-server-custom-grant-type</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -27,4 +27,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
