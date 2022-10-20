@@ -18,12 +18,12 @@
 		<module>jwt-authorization-server</module>
 		<module>jwt-resource-server</module>
         <module>jwt-authorization-server-persistence</module>
-		<module>oauth2-authorization-server-custom-grant-page</module>
         <module>oauth2-jwt-authorization-server-exception</module>
 		<module>oauth2-jwt-resource-server-exception</module>
         <module>oauth2-authorization-server-custom-controller-mysql</module>
         <module>oauth2-authorization-server-custom-grant-type</module>
-    </modules>
+		<module>oauth2-authorization-server-custom-grant-page</module>
+	</modules>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
