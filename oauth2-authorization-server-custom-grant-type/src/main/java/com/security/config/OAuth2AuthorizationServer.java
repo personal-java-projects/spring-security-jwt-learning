@@ -2,6 +2,7 @@ package com.security.config;
 
 import com.security.exception.GlobalOAuth2WebResponseExceptionTranslator;
 import com.security.granter.CaptchaTokenGranter;
+import com.security.granter.SmsCodeGranter;
 import com.security.interceptor.EndpointHandlerInterceptor;
 import com.security.service.UserService;
 import com.security.utils.RedisUtil;
@@ -88,6 +89,8 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 
         // 添加扩展的验证码模式
         tokenGranterList.add(new CaptchaTokenGranter(endpoints.getTokenServices(), endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory(), authorizationManager, RedisUtil));
+        // 增加短信验证码模式
+        tokenGranterList.add(new SmsCodeGranter(authorizationManager, endpoints.getTokenServices(), endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory()));
 
         CompositeTokenGranter compositeTokenGranter = new CompositeTokenGranter(tokenGranterList);
 

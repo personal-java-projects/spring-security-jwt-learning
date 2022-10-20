@@ -11,4 +11,6 @@ public interface UserMapper {
     void insertRoleUser(Integer roleId, Integer userId);
 
     User selectUserByUsername(@Param("username") String username);
+
+    User selectUserByPhone(@Param("phone") String phone);
 }

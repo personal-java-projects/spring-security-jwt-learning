@@ -29,4 +29,9 @@
             </if>
         </where>
     </select>
+
+    <select id="selectUserByPhone" parameterType="string" resultType="com.security.pojo.User">
+        <include refid="selectAllProperties"></include>
+        where phone = #{phone}
+    </select>
 </mapper>

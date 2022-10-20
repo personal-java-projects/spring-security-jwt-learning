@@ -15,6 +15,7 @@ import com.security.pojo.RoleUser;
 import com.security.service.UserService;
 import com.security.pojo.User;
 import com.security.utils.CaptchaUtils;
+import com.security.utils.PhoneFormatCheckUtils;
 import com.security.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,17 +48,28 @@ public class UserServiceImpl implements UserService {
     private RedisUtil redisUtil;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userMapper.selectUserByUsername(username);
+    public UserDetails loadUserByUsername(String usernameOrPhone) throws UsernameNotFoundException {
+        User user;
+        boolean isPhone = PhoneFormatCheckUtils.isPhoneLegal(usernameOrPhone);
+
+        // 因为刷新token也使用了loadUserByUsername方法
+        // 所以在这里判断是否是手机号
+        if (isPhone) {
+            user = userMapper.selectUserByPhone(usernameOrPhone);
+        } else {
+            user = userMapper.selectUserByUsername(usernameOrPhone);
+        }
 
         if (user == null) {
             //用户不存在直接抛出UsernameNotFoundException，security会捕获抛出BadCredentialsException
-            throw new UsernameNotFoundException(username + "不存在！");
+            throw new UsernameNotFoundException(usernameOrPhone + "不存在！");
         }
 
         SecurityUser securityUser = new SecurityUser();
         securityUser.setId(user.getId());
-        securityUser.setUsername(user.getUsername());
+
+        // 手机号验证码登录时，刷新token同样返回手机号作为用户名
+        securityUser.setUsername(isPhone ? user.getPhone() : user.getUsername());
         //todo 此处为了方便，直接在数据库存储的明文，实际生产中应该存储密文，则这里不用再次加密
         securityUser.setPassword(user.getPassword());
         List<RoleUser> roleUserList = roleUserMapper.selectRoleUserByUserId(user.getId());
