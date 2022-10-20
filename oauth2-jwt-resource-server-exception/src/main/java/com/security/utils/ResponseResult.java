@@ -2,7 +2,6 @@ package com.security.utils;
 
 
 import com.alibaba.fastjson2.JSONObject;
-import com.security.enums.BaseErrorInfo;
 import com.security.enums.CodeEnum;
 import lombok.Data;
 
@@ -81,11 +80,15 @@ public class ResponseResult<T> {
 
     /**
      * 成功
-     *
+     * @param data
      * @return
      */
-    public static ResponseResult success() {
-        return success(null);
+    public ResponseResult success(T data) {
+        this.setCode(CodeEnum.SUCCESS.getCode());
+        this.setMessage(CodeEnum.SUCCESS.getMessage());
+        this.setData(data);
+
+        return this;
     }
 
     /**
@@ -93,13 +96,12 @@ public class ResponseResult<T> {
      * @param data
      * @return
      */
-    public static ResponseResult success(Object data) {
-        ResponseResult responseResult = new ResponseResult();
-        responseResult.setCode(CodeEnum.SUCCESS.getCode());
-        responseResult.setMessage(CodeEnum.SUCCESS.getMessage());
-        responseResult.setData(data);
+    public ResponseResult success(String message, T data) {
+        this.setCode(CodeEnum.SUCCESS.getCode());
+        this.setMessage(message);
+        this.setData(data);
 
-        return responseResult;
+        return this;
     }
 
     /**
@@ -107,13 +109,12 @@ public class ResponseResult<T> {
      * @param errorInfo
      * @return
      */
-    public static ResponseResult error(BaseErrorInfo errorInfo) {
-        ResponseResult responseResult = new ResponseResult();
-        responseResult.setCode(errorInfo.getCode());
-        responseResult.setMessage(errorInfo.getMessage());
-        responseResult.setData(null);
+    public ResponseResult error(T data) {
+        this.setCode(CodeEnum.BODY_NOT_MATCH.getCode());
+        this.setMessage(CodeEnum.BODY_NOT_MATCH.getMessage());
+        this.setData(null);
 
-        return responseResult;
+        return this;
     }
 
     /**
@@ -122,12 +123,12 @@ public class ResponseResult<T> {
      * @param message
      * @return
      */
-    public static ResponseResult error(Integer code, String message) {
-        ResponseResult responseResult = new ResponseResult();
-        responseResult.setCode(code);
-        responseResult.setMessage(message);
-        responseResult.setData(null);
-        return responseResult;
+    public ResponseResult error(Integer code, String message) {
+        this.setCode(code);
+        this.setMessage(message);
+        this.setData(null);
+
+        return this;
     }
 
     /**
@@ -135,13 +136,12 @@ public class ResponseResult<T> {
      * @param message
      * @return
      */
-    public static ResponseResult error(String message) {
-        ResponseResult responseResult = new ResponseResult();
-        responseResult.setCode(CodeEnum.INTERNAL_SERVER_ERROR.getCode());
-        responseResult.setMessage(message);
-        responseResult.setData(null);
+    public ResponseResult error(String message) {
+        this.setCode(CodeEnum.BODY_NOT_MATCH.getCode());
+        this.setMessage(message);
+        this.setData(null);
 
-        return responseResult;
+        return this;
     }
 
     @Override
