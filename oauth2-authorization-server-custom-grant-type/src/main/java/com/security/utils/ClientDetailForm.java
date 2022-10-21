@@ -1,9 +1,8 @@
-package com.security.model;
+package com.security.utils;
 
 import com.security.constant.JwtConstant;
 import com.security.constant.SecurityConstant;
 import com.security.pojo.ClientDetail;
-import com.security.utils.EncodeUtils;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
