@@ -21,6 +21,7 @@
         <module>oauth2-jwt-authorization-server-exception</module>
 		<module>oauth2-jwt-resource-server-exception</module>
         <module>oauth2-authorization-server-custom-controller-mysql</module>
+		<module>oauth2-authorization-server-custom-grant-page</module>
         <module>oauth2-authorization-server-custom-grant-type</module>
 		<module>oauth2-resource-server-custom-permission</module>
 	</modules>
