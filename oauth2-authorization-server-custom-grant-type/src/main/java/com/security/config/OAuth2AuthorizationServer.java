@@ -4,6 +4,7 @@ import com.security.exception.GlobalOAuth2WebResponseExceptionTranslator;
 import com.security.granter.CaptchaTokenGranter;
 import com.security.granter.SmsCodeGranter;
 import com.security.interceptor.EndpointHandlerInterceptor;
+import com.security.service.AuthorizationCodeService;
 import com.security.service.UserService;
 import com.security.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -69,6 +71,9 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
     @Resource
     private RedisUtil RedisUtil;
 
+    @Autowired
+    private AuthorizationCodeService authorizationCodeService;
+
     //这个位置我们将Client客户端注册信息写死，后面章节我们会讲解动态实现
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -110,6 +115,8 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 //                // 认证服务器和资源服务器分开，两者都需要配置tokenStore
                 .tokenStore(jwtTokenStore)
                 .authenticationManager(authorizationManager)
+                // 自定义授权码
+                .authorizationCodeServices(authorizationCodeService)
                 // 设置自定义的异常翻译器
                 .exceptionTranslator(new GlobalOAuth2WebResponseExceptionTranslator())
                 // 添加入口校验拦截器
@@ -120,8 +127,6 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
                 .tokenGranter(compositeTokenGranter)
                 // 数据库管理授权信息
 //                .approvalStore(new JdbcApprovalStore(dataSource))
-                // 数据库管理授权码
-//                .authorizationCodeServices(new JdbcAuthorizationCodeServices(dataSource))
                 .pathMapping("/oauth/confirm_access", "/auth/confirm_access")
                 .pathMapping("/oauth/token","/auth/token")
                 /**

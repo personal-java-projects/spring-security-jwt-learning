@@ -1,5 +1,6 @@
 package com.security.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -20,6 +21,7 @@ public class UserController {
     private TokenStore tokenStore;
 
     @PostMapping(value = "/getUserInfo")
+    @PreAuthorize("hasAnyAuthority('product')")
     public Map<String, Object> hello(OAuth2Authentication authentication) {
         Map<String, Object> map = getExtraInfo(authentication);
         return map;
