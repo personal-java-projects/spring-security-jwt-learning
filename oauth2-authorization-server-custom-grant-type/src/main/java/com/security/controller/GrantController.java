@@ -3,6 +3,8 @@ package com.security.controller;
 import com.security.enums.CodeEnum;
 import com.security.model.ClientDetailForm;
 import com.security.model.LoginRegisterForm;
+import com.security.pojo.ClientDetail;
+import com.security.service.ClientService;
 import com.security.service.UserService;
 import com.security.utils.RedisUtil;
 import com.security.utils.ResponseResult;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
@@ -35,6 +38,9 @@ import java.util.*;
 @RequestMapping("/auth")
 @Slf4j
 public class GrantController {
+
+    @Autowired
+    private ClientService clientService;
 
     @Autowired
     private UserService userService;
@@ -50,24 +56,10 @@ public class GrantController {
     private TokenEndpoint tokenEndpoint;
 
     @Autowired
-    private RedisUtil redisUtil;
+    private AuthenticationManager authenticationManager;
 
-    @GetMapping("/sendCode")
-    @ResponseBody
-    public ResponseResult sendCode(String phone) {
-        // 1. 获取到手机号
-        log.info(phone + "请求获取验证码");
-        // 2. 模拟调用短信平台获取验证码，以手机号为KEY，验证码为值，存入Redis，过期时间一分钟
-        String code = generateRandomCode(6);
-        redisUtil.set(phone, code, 60*10);
-        String saveCode = (String) redisUtil.get(phone);// 缓存中的code
-        Long expire = redisUtil.getExpire(phone); // 查询过期时间
-        // 3. 验证码应该通过短信发给用户，这里直接返回吧
-        Map<String,String> result=new HashMap<>();
-        result.put("code",saveCode);
-        result.put("过期时间",expire+"秒");
-        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(result);
-    }
+    @Autowired
+    private RedisUtil redisUtil;
 
     @PostMapping("/register")
     @ResponseBody
@@ -84,9 +76,11 @@ public class GrantController {
      */
     @PostMapping("/registerClient")
     @ResponseBody
-    public ResponseEntity registerClient(@RequestBody ClientDetailForm clientDetailForm) throws Exception {
+    public ResponseResult registerClient(@Valid @RequestBody ClientDetailForm clientDetailForm) throws Exception {
 
-//        clientService.addClient(clientDetailForm);
+        ClientDetail clientDetail = clientDetailForm.toClientDetail(clientDetailForm);
+
+        clientService.addClient(clientDetail);
 
         return null;
     }
@@ -111,7 +105,6 @@ public class GrantController {
     }
 
     @GetMapping("/getCode")
-    @ResponseBody
     public ResponseEntity getCode(@RequestParam String code) {
         return ResponseEntity.ok(code);
     }
@@ -160,9 +153,25 @@ public class GrantController {
     }
 
     @GetMapping("/getCaptcha")
-    @ResponseBody
     public void getRandomCode(HttpServletResponse response) throws IOException {
         userService.getRandomCode(response);
+    }
+
+    @GetMapping("/sendCode")
+    @ResponseBody
+    public ResponseResult sendCode(String phone) {
+        // 1. 获取到手机号
+        log.info(phone + "请求获取验证码");
+        // 2. 模拟调用短信平台获取验证码，以手机号为KEY，验证码为值，存入Redis，过期时间一分钟
+        String code = generateRandomCode(6);
+        redisUtil.set(phone, code, 60*10);
+        String saveCode = (String) redisUtil.get(phone);// 缓存中的code
+        Long expire = redisUtil.getExpire(phone); // 查询过期时间
+        // 3. 验证码应该通过短信发给用户，这里直接返回吧
+        Map<String,String> result=new HashMap<>();
+        result.put("code",saveCode);
+        result.put("过期时间",expire+"秒");
+        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(result);
     }
 
     private String generateRandomCode(int len) {
@@ -175,4 +184,5 @@ public class GrantController {
 
         return result;
     }
+
 }
