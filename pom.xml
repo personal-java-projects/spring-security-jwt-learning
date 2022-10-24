@@ -26,6 +26,7 @@
 		<module>oauth2-resource-server-custom-permission</module>
         <module>oauth2-authorization-server-custom-grant-type-by-controller</module>
 		<module>oauth2-authorization-server-custom-grant-type-by-security</module>
+		<module>oauth2-authorization-server-sms-service</module>
 	</modules>
 
 	<parent>
@@ -75,6 +76,12 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-pool2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tencentcloudapi</groupId>
+			<artifactId>tencentcloud-sdk-java</artifactId>
+			<version>3.1.270</version>
 		</dependency>
 
 		<dependency>
