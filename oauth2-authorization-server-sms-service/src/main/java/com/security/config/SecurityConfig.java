@@ -1,5 +1,6 @@
 package com.security.config;
 
+import com.security.filter.ValidateCodeFilter;
 import com.security.granter.SmsAuthenticationProvider;
 import com.security.granter.SmsAuthenticationSecurityConfig;
 import com.security.service.UserService;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -27,6 +29,9 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private ValidateCodeFilter validateCodeFilter;
 
     @Resource
     private SmsAuthenticationSecurityConfig smsAuthenticationSecurityConfig;
@@ -51,10 +56,14 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 // /oauth/**接口必须在用户登录之后才能访问，否则用户未登录就先校验认证，不符合逻辑
-                .antMatchers("/login", "/base-login.html", "/auth/**", "/oauth/sms").permitAll()
+                .antMatchers("/login", "/base-login.html", "/auth/**", "/oauth/sms", "/code/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();
+
+        // 添加验证码过滤器
+        http
+                .addFilterBefore(validateCodeFilter, AbstractPreAuthenticatedProcessingFilter.class);
     }
 
     @Bean
