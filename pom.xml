@@ -27,6 +27,7 @@
         <module>oauth2-authorization-server-custom-grant-type-by-controller</module>
 		<module>oauth2-authorization-server-custom-grant-type-by-security</module>
 		<module>oauth2-authorization-server-sms-service</module>
+		<module>oauth2-sso-client1</module>
 	</modules>
 
 	<parent>

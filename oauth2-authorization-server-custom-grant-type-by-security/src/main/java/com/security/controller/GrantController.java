@@ -22,9 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.TokenGranter;
+import org.springframework.security.oauth2.provider.*;
 import org.springframework.security.oauth2.provider.endpoint.AbstractEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter;
@@ -49,6 +47,9 @@ public class GrantController {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private ClientDetailsService clientDetailsService;
 
     @Autowired
     private UserService userService;
@@ -117,10 +118,30 @@ public class GrantController {
         return ResponseEntity.ok(code);
     }
 
+    /**
+     * 重新实现获取token的逻辑，不再将框架自带的/oauth/token接口返回token的逻辑引入到这里
+     * 因为单点需要框架自带的的/oauth/token接口，否则会报错。
+     * 该接口调用了框架自带的postAccessToken获取对应token并自定义返回格式。
+     * @param parameters
+     * @return
+     * @throws HttpRequestMethodNotSupportedException
+     */
     @PostMapping("/token")
     @ResponseBody
-    public ResponseResult postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
-        OAuth2AccessToken accessToken = tokenEndpoint.postAccessToken(principal, parameters).getBody();
+    public ResponseResult postAccessToken(@RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+        // 从数据库获取客户端数据
+        ClientDetails client = clientDetailsService.loadClientByClientId(parameters.get("client_id"));
+        // 将ClientDetails类转为用户类
+        SecurityUser securityUser = new SecurityUser();
+        securityUser.setUsername(client.getClientId());
+        securityUser.setPassword(client.getClientSecret());
+        securityUser.setAuthorities(new ArrayList<>());
+
+        // 将客户端类转换为UsernamePasswordAuthenticationToken
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(securityUser, null, new ArrayList<>());
+
+        // 对应授权类型所需的parameters参数要完整
+        OAuth2AccessToken accessToken = tokenEndpoint.postAccessToken(usernamePasswordAuthenticationToken, parameters).getBody();
 
         Map<String, Object> resultMap = new HashMap<>();
 
