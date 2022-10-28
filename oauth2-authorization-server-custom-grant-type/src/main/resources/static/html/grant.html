@@ -58,7 +58,7 @@
     <p>昵称，头像和性别</p>
     授权后表明你已同意 <a  href="#boot" style="color: #E9686B">服务协议</a>
     <form method="post" action="/author/oauth/authorize">
-        <input type="hidden" name="user_oauth_approval" value="false">
+        <input type="hidden" name="user_oauth_approval" value="true">
         <div th:each="item:${scopes}">
             <input type="radio" th:name="'scope.'+${item}" value="true" checked>同意
             <input type="radio" th:name="'scope.'+${item}" value="false" >拒绝
