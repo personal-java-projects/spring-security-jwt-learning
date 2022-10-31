@@ -20,7 +20,8 @@ public class JwtTokenConfig {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter(){
         JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
-        accessTokenConverter.setSigningKey("用于签名解签名的secret密钥");
+        // jwt密钥不能含中文，否则会导致sso客户端一直重定向
+        accessTokenConverter.setSigningKey("test-secret");
         return accessTokenConverter;
     }
 

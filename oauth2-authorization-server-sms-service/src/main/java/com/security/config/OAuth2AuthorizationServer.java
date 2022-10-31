@@ -83,7 +83,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
                 // 数据库管理授权码
 //                .authorizationCodeServices(new JdbcAuthorizationCodeServices(dataSource))
                 .pathMapping("/oauth/confirm_access", "/auth/confirm_access")
-                .pathMapping("/oauth/token","/auth/token")
+//                .pathMapping("/oauth/token","/auth/token")
                 /**
                  * refresh_token有两种使用方式：重复使用(true)、非重复使用(false)，默认为true
                  * 1、重复使用：access_token过期刷新时，refresh_token过期时间未改变，仍以初次生成的时间为准
