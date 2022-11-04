@@ -13,12 +13,17 @@ import com.sun.deploy.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -26,13 +31,16 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -53,6 +61,11 @@ public class GrantController {
 
     @Autowired
     private UserService userService;
+
+    @Bean
+    private SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 
     /**
      * 因为项目集成了jwt，不能直接使用TokenStore，它是接口
@@ -247,6 +260,43 @@ public class GrantController {
             throw new BadCredentialsException("Invalid basic authentication token");
         }
         return new String[]{token.substring(0, delimiter), token.substring(delimiter + 1)};
+    }
+
+    @GetMapping("/logoutSuccess")
+    @ResponseBody
+    public ResponseResult logoutSuccess(HttpServletRequest request, HttpServletResponse response, HttpSession httpSession, Authentication authentication) {
+        System.out.println("1111");
+
+        List<Object> principals = sessionRegistry().getAllPrincipals();
+        //退出成功后删除当前用户session
+        for (Object principal : principals) {
+            if (principal instanceof SecurityUser) {
+                final SecurityUser loggedUser = (SecurityUser) principal;
+                if (authentication.getName().equals(loggedUser.getUsername())) {
+                    List<SessionInformation> sessionsInfo = sessionRegistry().getAllSessions(principal, false);
+                    if (null != sessionsInfo && sessionsInfo.size() > 0) {
+                        for (SessionInformation sessionInformation : sessionsInfo) {
+                            sessionInformation.expireNow();
+                        }
+                    }
+                }
+            }
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {//清除认证
+            SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
+            securityContextLogoutHandler.setInvalidateHttpSession(true);
+            auth.setAuthenticated(false);
+            httpSession.invalidate();
+
+            // 清除认证信息
+            securityContextLogoutHandler.setClearAuthentication(true);
+            securityContextLogoutHandler.logout(request, response, auth);
+
+            System.out.println("logout" + auth.isAuthenticated());
+        }
+        return ResponseResult.builder().success();
     }
 
 }

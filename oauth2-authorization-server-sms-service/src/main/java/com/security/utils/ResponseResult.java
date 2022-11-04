@@ -81,6 +81,19 @@ public class ResponseResult<T> {
 
     /**
      * 成功
+     * @param
+     * @return
+     */
+    public ResponseResult success() {
+        this.setCode(CodeEnum.SUCCESS.getCode());
+        this.setMessage(CodeEnum.SUCCESS.getMessage());
+        this.setData(null);
+
+        return this;
+    }
+
+    /**
+     * 成功
      * @param data
      * @return
      */
