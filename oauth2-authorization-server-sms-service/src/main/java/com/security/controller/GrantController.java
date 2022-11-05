@@ -267,6 +267,8 @@ public class GrantController {
     public ResponseResult logoutSuccess(HttpServletRequest request, HttpServletResponse response, HttpSession httpSession, Authentication authentication) {
         System.out.println("1111");
 
+        System.out.println("request" + request.getQueryString());
+
         List<Object> principals = sessionRegistry().getAllPrincipals();
         //退出成功后删除当前用户session
         for (Object principal : principals) {
