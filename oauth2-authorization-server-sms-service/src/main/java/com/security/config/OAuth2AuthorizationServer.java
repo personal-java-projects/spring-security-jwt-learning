@@ -54,12 +54,16 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
     @Autowired
     private TokenServiceUtils tokenServiceUtils;
 
+    public ClientDetailsService clientDetailsService() {
+        JdbcClientDetailsService clientDetailsService = new JdbcClientDetailsService(dataSource);
+        clientDetailsService.setPasswordEncoder(passwordEncoder);
+        return clientDetailsService;
+    }
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 //        //配置客户端存储到db 代替原来得内存模式
-        JdbcClientDetailsService clientDetailsService = new JdbcClientDetailsService(dataSource);
-        clientDetailsService.setPasswordEncoder(passwordEncoder);
-        clients.withClientDetails(clientDetailsService);
+        clients.withClientDetails(clientDetailsService());
     }
 
     /**
@@ -70,7 +74,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 
         endpoints
                 // 认证服务器和资源服务器分开，两者都需要配置tokenStore
-                .tokenServices(tokenServiceUtils.getTokenService())
+                .tokenServices(tokenServiceUtils.getTokenService(clientDetailsService()))
                 .authenticationManager(authorizationManager)
                 // 设置自定义的异常翻译器
                 .exceptionTranslator(new GlobalOAuth2WebResponseExceptionTranslator())

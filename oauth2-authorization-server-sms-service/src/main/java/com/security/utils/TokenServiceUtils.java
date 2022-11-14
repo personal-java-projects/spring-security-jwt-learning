@@ -44,6 +44,7 @@ public class TokenServiceUtils {
         return services;
     }
 
+    // 这里的 token 的过期时间是官方默认的
     public AuthorizationServerTokenServices getTokenService() {
         DefaultTokenServices services = new DefaultTokenServices();
         services.setSupportRefreshToken(true);

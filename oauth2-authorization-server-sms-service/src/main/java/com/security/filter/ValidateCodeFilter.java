@@ -70,8 +70,8 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
             Set<String> urls = urlMap.keySet();
             for (String url : urls) {
                 // 如果路径匹配，就回去他的类型，也就是 map 的 value
-                log.info("request.getRequestURI(): " + request.getRequestURI().replaceAll(request.getContextPath(), ""));
-                if (antPathMatcher.match(url, request.getRequestURI().replaceAll(request.getContextPath(), ""))) {
+                log.info("request.getRequestURI(): " + request.getRequestURI() + " >>> context path: " + request.getContextPath() + " >>> replace: " + request.getRequestURI().replaceFirst(request.getContextPath(), ""));
+                if (antPathMatcher.match(url, request.getRequestURI().replaceFirst(request.getContextPath(), ""))) {
                     return urlMap.get(url);
                 }
             }
