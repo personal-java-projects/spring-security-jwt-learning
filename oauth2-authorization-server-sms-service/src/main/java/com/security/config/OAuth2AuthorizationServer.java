@@ -1,6 +1,7 @@
 package com.security.config;
 
 import com.security.exception.GlobalOAuth2WebResponseExceptionTranslator;
+import com.security.handler.CustomAuthenticationEntryPoint;
 import com.security.interceptor.EndpointHandlerInterceptor;
 import com.security.service.UserService;
 import com.security.utils.RedisUtil;
@@ -54,6 +55,9 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
     @Autowired
     private TokenServiceUtils tokenServiceUtils;
 
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
     public ClientDetailsService clientDetailsService() {
         JdbcClientDetailsService clientDetailsService = new JdbcClientDetailsService(dataSource);
         clientDetailsService.setPasswordEncoder(passwordEncoder);
@@ -99,7 +103,15 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
     // 令牌安全约束
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-        oauthServer.tokenKeyAccess("permitAll()")
+        // 自定义客户端异常处理过滤器: {"error": "invalid_client", "error_description": "Bad client credentials"}
+//        CustomClientCredentialsTokenEndpointFilter endpointFilter = new CustomClientCredentialsTokenEndpointFilter(oauthServer);
+//        endpointFilter.afterPropertiesSet();//初始化的时候执行
+//        endpointFilter.setAuthenticationEntryPoint(customAuthenticationEntryPoint);//格式化客户端异常的响应格式
+//        oauthServer.addTokenEndpointAuthenticationFilter(endpointFilter); // 其实只有.authenticationEntryPoint(customAuthenticationEntryPoint)生效了
+
+        oauthServer
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .tokenKeyAccess("permitAll()")
                 // 将checkTokenAccess的权限设置为isAuthenticated，认证通过才可以访问。
                 .checkTokenAccess("isAuthenticated()");
                 // 开启表单验证
