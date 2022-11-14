@@ -11,6 +11,7 @@ spring:
     username: root
     password: root
 
+# 配置单点登录相关信息
 security:
   oauth2:
     client:
@@ -28,17 +29,6 @@ security:
         key-uri: http://localhost:8001/author/oauth/token_key
         key-value: test-secret
 
-zlt:
-  sso:
-    client-secret: 123456
-    client-id: client5
-    redirect-uri: http://localhost:1112/callback.html
-    user-authorization-uri: http://localhost:8001/author/oauth/authorize
-    access-token-uri: http://localhost:8001/author/oauth/token
-    key-uri: http://localhost:8001/author/oauth/token_key
-    user-info-uri: http://localhost:8002/api/hello
-    # ??????????
-    scope: all
 mybatis:
   # mapper ??
   mapper-locations: classpath:mapper/*.xml
