@@ -10,10 +10,10 @@ spring:
   main:
     allow-bean-definition-overriding: true
     allow-circular-references: true
-#  session:
+  session:
 #    store-type: redis
 #    # 单位秒 默认最短一分钟 默认半小时
-#    timeout: 300
+    timeout: 86400
 #    redis:
 #      namespace: test:spring:session
   redis:

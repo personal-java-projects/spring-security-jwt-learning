@@ -1,8 +1,6 @@
 package com.security.utils;
 
-
-import com.alibaba.fastjson2.JSONObject;
-import com.security.enums.BaseErrorInfo;
+import com.alibaba.fastjson.JSONObject;
 import com.security.enums.CodeEnum;
 import lombok.Data;
 

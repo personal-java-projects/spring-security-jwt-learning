@@ -33,9 +33,6 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
     @Resource
     private UserService userService;
 
-    @Resource
-    private RedisTemplate redisTemplate;
-
     @Autowired
     private SpringSessionBackedSessionRegistry<? extends Session> sessionRegistry;
 

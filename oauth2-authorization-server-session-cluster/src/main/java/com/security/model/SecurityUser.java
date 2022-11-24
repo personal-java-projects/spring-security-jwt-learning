@@ -1,9 +1,15 @@
 package com.security.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.security.serializer.CustomAuthorityDeserializer;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -11,7 +17,9 @@ import java.util.Collection;
  * 存储用户的详细信息，实现UserDetails，后续有定制的字段可以自己拓展
  */
 @Data
-public class SecurityUser implements UserDetails {
+public class SecurityUser implements UserDetails, Serializable {
+
+    private static final long serialVersionUID = 9178661439383356177L;
 
     // 用户id
     private Integer id;
@@ -32,7 +40,10 @@ public class SecurityUser implements UserDetails {
     private Long expireTime;
 
     //权限+角色集合
+//    @JsonDeserialize(using = CustomAuthorityDeserializer.class)
     private Collection<? extends GrantedAuthority> authorities;
+
+    public SecurityUser () {}
 
     public SecurityUser(String username, String password,Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
@@ -40,10 +51,8 @@ public class SecurityUser implements UserDetails {
         this.authorities = authorities;
     }
 
-    public SecurityUser(){}
-
-
     @Override
+//    @JsonDeserialize(using = CustomAuthorityDeserializer.class)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }

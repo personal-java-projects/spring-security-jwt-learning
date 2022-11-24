@@ -1,7 +1,5 @@
 package com.security.utils;
 
-
-import com.alibaba.fastjson2.JSON;
 import com.security.properties.SmsProperties;
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
