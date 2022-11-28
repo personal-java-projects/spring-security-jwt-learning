@@ -30,7 +30,7 @@ public class GlobalOAuth2ExceptionSerializer extends StdSerializer<GlobalOAuth2E
         }
 
         generator.writeStringField("message", message);
-        if (e.getAdditionalInformation()!=null) {
+        if (e.getAdditionalInformation() != null) {
             for (Map.Entry<String, String> entry : e.getAdditionalInformation().entrySet()) {
                 String key = entry.getKey();
                 String add = entry.getValue();

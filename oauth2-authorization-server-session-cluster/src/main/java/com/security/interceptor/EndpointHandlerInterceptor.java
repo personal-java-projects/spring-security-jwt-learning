@@ -1,18 +1,17 @@
 package com.security.interceptor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.security.utils.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.common.exceptions.*;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
+import org.springframework.security.oauth2.common.exceptions.RedirectMismatchException;
+import org.springframework.security.oauth2.common.exceptions.UnsupportedResponseTypeException;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

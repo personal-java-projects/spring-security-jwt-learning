@@ -9,10 +9,11 @@ import java.util.Map;
 public class CookiesUtils {
     /**
      * 设置一个cookie
+     *
      * @param response HttpServletResponse
-     * @param name cookie的名称
-     * @param value cookie的内容
-     * @param maxAge cookie的持续时间
+     * @param name     cookie的名称
+     * @param value    cookie的内容
+     * @param maxAge   cookie的持续时间
      */
     public static void set(HttpServletResponse response,
                            String name,
@@ -26,8 +27,9 @@ public class CookiesUtils {
 
     /**
      * 查找cookie
+     *
      * @param request HttpServletRequest
-     * @param name 要查找的cookie的名称
+     * @param name    要查找的cookie的名称
      * @return
      */
     public static Cookie get(HttpServletRequest request,

@@ -1,17 +1,17 @@
 package com.security.utils;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- *
  * @author wangshubin
  * @category HttpSession的代理类 封装了session的常用方法。
  */
@@ -65,7 +65,7 @@ public class SessionContext {
      * 外部获取session方法
      */
     private static HttpSession getSession() {
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
         return request.getSession();
     }

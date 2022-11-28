@@ -11,16 +11,16 @@ import org.springframework.http.HttpStatus;
 @SpringBootApplication
 public class AuthorizationServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AuthorizationServerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AuthorizationServerApplication.class, args);
+    }
 
-	@Bean
-	public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer() {
-		//第二种写法：java8 lambda写法
-		return (factory -> {
-			ErrorPage errorPage404 = new ErrorPage(HttpStatus.NOT_FOUND, "/index.html");
-			factory.addErrorPages(errorPage404);
-		});
-	}
+    @Bean
+    public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer() {
+        //第二种写法：java8 lambda写法
+        return (factory -> {
+            ErrorPage errorPage404 = new ErrorPage(HttpStatus.NOT_FOUND, "/index.html");
+            factory.addErrorPages(errorPage404);
+        });
+    }
 }

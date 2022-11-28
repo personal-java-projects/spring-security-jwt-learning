@@ -45,6 +45,6 @@ public class ValidateCodeRepositoryImpl implements ValidateCodeRepository {
             throw new ValidateCodeException("请求中不存在账号");
         }
 
-        return "code:" + type + ":" +  phoneOrEmail;
+        return "code:" + type + ":" + phoneOrEmail;
     }
 }

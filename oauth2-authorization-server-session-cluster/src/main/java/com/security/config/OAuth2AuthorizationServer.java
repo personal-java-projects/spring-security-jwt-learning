@@ -4,12 +4,9 @@ import com.security.exception.GlobalOAuth2WebResponseExceptionTranslator;
 import com.security.handler.CustomAuthenticationEntryPoint;
 import com.security.interceptor.EndpointHandlerInterceptor;
 import com.security.service.UserService;
-import com.security.utils.RedisUtil;
 import com.security.utils.TokenServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -18,18 +15,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.CompositeTokenGranter;
-import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
-import org.springframework.security.oauth2.provider.token.*;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @Description: @EnableAuthorizationServer注解开启OAuth2授权服务机制
@@ -72,7 +61,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
     }
 
     /**
-     用来配置授权（authorization）以及令牌（token)的访问端点和令牌服务（token services）
+     * 用来配置授权（authorization）以及令牌（token)的访问端点和令牌服务（token services）
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
@@ -115,7 +104,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
                 .tokenKeyAccess("permitAll()")
                 // 将checkTokenAccess的权限设置为isAuthenticated，认证通过才可以访问。
                 .checkTokenAccess("isAuthenticated()");
-                // 开启表单验证
+        // 开启表单验证
 //                .allowFormAuthenticationForClients();
     }
 

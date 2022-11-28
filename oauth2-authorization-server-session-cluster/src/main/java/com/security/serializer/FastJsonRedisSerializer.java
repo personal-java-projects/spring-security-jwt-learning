@@ -23,8 +23,7 @@ public class FastJsonRedisSerializer<T> implements RedisSerializer<T> {
 
     private Class<T> clazz;
 
-    static
-    {
+    static {
         // 全局开启AutoType, autoType类型默认时被fastjson禁用掉了的，这里进行开启
         ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
         //如果遇到反序列化autoType is not support错误，请添加并修改一下包名到bean文件路径

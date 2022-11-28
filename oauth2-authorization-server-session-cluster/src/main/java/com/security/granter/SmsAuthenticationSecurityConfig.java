@@ -31,7 +31,7 @@ public class SmsAuthenticationSecurityConfig
     private SmsFailureHandler smsFailureHandler;
 
     @Override
-    public void configure(HttpSecurity http)  {
+    public void configure(HttpSecurity http) {
         // 过滤器
         SmsAuthenticationFilter smsAuthenticationFilter = new SmsAuthenticationFilter();
         smsAuthenticationFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));

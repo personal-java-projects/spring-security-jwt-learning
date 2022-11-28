@@ -31,8 +31,8 @@ public class GlobalOAuth2Exception extends OAuth2Exception {
     public static final String INVALID_SCOPE = "invalid_scope";
     public static final String INSUFFICIENT_SCOPE = "insufficient_scope";
     public static final String INVALID_TOKEN = "invalid_token";
-    public static final String REDIRECT_URI_MISMATCH ="redirect_uri_mismatch";
-    public static final String UNSUPPORTED_RESPONSE_TYPE ="unsupported_response_type";
+    public static final String REDIRECT_URI_MISMATCH = "redirect_uri_mismatch";
+    public static final String UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
     public static final String ACCESS_DENIED = "access_denied";
     /**
      * 其他异常
@@ -47,15 +47,15 @@ public class GlobalOAuth2Exception extends OAuth2Exception {
      * 映射了一部分
      */
     static {
-        oAuth2ErrorMap.put(INVALID_CLIENT,"无效的客户端");
-        oAuth2ErrorMap.put(INVALID_GRANT,"无效的授权模式");
-        oAuth2ErrorMap.put(INVALID_SCOPE,"权限不足");
-        oAuth2ErrorMap.put(UNSUPPORTED_GRANT_TYPE,"不支持的授权模式类型");
-        oAuth2ErrorMap.put(ACCESS_DENIED,"拒绝访问");
+        oAuth2ErrorMap.put(INVALID_CLIENT, "无效的客户端");
+        oAuth2ErrorMap.put(INVALID_GRANT, "无效的授权模式");
+        oAuth2ErrorMap.put(INVALID_SCOPE, "权限不足");
+        oAuth2ErrorMap.put(UNSUPPORTED_GRANT_TYPE, "不支持的授权模式类型");
+        oAuth2ErrorMap.put(ACCESS_DENIED, "拒绝访问");
 
-        oAuth2ErrorMap.put(METHOD_NOT_ALLOWED,"方法不允许访问");
-        oAuth2ErrorMap.put(SERVER_ERROR,"服务器内部异常");
-        oAuth2ErrorMap.put(UNAUTHORIZED,"未授权");
+        oAuth2ErrorMap.put(METHOD_NOT_ALLOWED, "方法不允许访问");
+        oAuth2ErrorMap.put(SERVER_ERROR, "服务器内部异常");
+        oAuth2ErrorMap.put(UNAUTHORIZED, "未授权");
     }
 
     /**

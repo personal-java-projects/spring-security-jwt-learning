@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>authorization-server</artifactId>
+    <artifactId>oauth2-authorization-server-session-cluster</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

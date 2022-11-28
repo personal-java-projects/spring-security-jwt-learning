@@ -1,11 +1,12 @@
 package com.security.utils;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.security.enums.CodeEnum;
 import lombok.Data;
 
 /**
  * 自定义数据格式
+ *
  * @param <T>
  */
 @Data
@@ -41,6 +42,7 @@ public class ResponseResult<T> {
 
     /**
      * 对象构造器，创建一个ResponseResult对象用来链式调用
+     *
      * @return
      */
     public static ResponseResult builder() {
@@ -79,6 +81,7 @@ public class ResponseResult<T> {
 
     /**
      * 成功
+     *
      * @param
      * @return
      */
@@ -92,6 +95,7 @@ public class ResponseResult<T> {
 
     /**
      * 成功
+     *
      * @param data
      * @return
      */
@@ -105,6 +109,7 @@ public class ResponseResult<T> {
 
     /**
      * 成功
+     *
      * @param data
      * @return
      */
@@ -118,6 +123,7 @@ public class ResponseResult<T> {
 
     /**
      * 失败
+     *
      * @param errorInfo
      * @return
      */
@@ -131,6 +137,7 @@ public class ResponseResult<T> {
 
     /**
      * 失败
+     *
      * @param code
      * @param message
      * @return
@@ -145,6 +152,7 @@ public class ResponseResult<T> {
 
     /**
      * 失败
+     *
      * @param message
      * @return
      */

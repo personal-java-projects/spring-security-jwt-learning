@@ -4,19 +4,20 @@ package com.security.utils;
 import java.util.UUID;
 
 /**
- * @ClassName:       PasswordUtils
- *                   密码工具类
- * @Author:          小冯
- * @CreateDate:      2019/9/7 13:44
- * @UpdateUser:      小冯
- * @UpdateDate:      2019/9/7 13:44
- * @Version:         0.0.1
+ * @ClassName: PasswordUtils
+ * 密码工具类
+ * @Author: 小冯
+ * @CreateDate: 2019/9/7 13:44
+ * @UpdateUser: 小冯
+ * @UpdateDate: 2019/9/7 13:44
+ * @Version: 0.0.1
  */
 public class EncodeUtils {
 
     /**
      * 匹配密码
-     * @param salt 盐
+     *
+     * @param salt    盐
      * @param rawPass 明文
      * @param encPass 密文
      * @return
@@ -27,6 +28,7 @@ public class EncodeUtils {
 
     /**
      * 明文密码加密
+     *
      * @param rawPass 明文
      * @param salt
      * @return
@@ -37,6 +39,7 @@ public class EncodeUtils {
 
     /**
      * 获取加密盐
+     *
      * @return
      */
     public static String getSalt() {

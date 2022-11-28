@@ -31,10 +31,10 @@ public class CookieController {
 
     @GetMapping("/sessionId")
     @ResponseBody
-    public String sessionId(){
+    public String sessionId() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         HttpSession session = request.getSession();
-        session.setAttribute("user","sanri");
+        session.setAttribute("user", "sanri");
         return session.getId();
     }
 

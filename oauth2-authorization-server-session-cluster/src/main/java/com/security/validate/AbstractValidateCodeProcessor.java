@@ -67,7 +67,7 @@ public abstract class AbstractValidateCodeProcessor implements ValidateCodeProce
      * @param validateCode 验证码
      */
     private void save(ServletWebRequest request, String phoneOrEmail, String validateCode) {
-        validateCodeRepository.save(phoneOrEmail, validateCode,getValidateCodeType(request));
+        validateCodeRepository.save(phoneOrEmail, validateCode, getValidateCodeType(request));
     }
 
     /**

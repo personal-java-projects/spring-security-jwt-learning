@@ -79,6 +79,7 @@ public class CaptchaUtils {
     /**
      * 算术验证码构造器
      * 每次调用初始化相关参数
+     *
      * @param randomStrNum
      * @return
      */
@@ -121,13 +122,13 @@ public class CaptchaUtils {
     }
 
     // 随机字符的获取
-    private String getRandomString(int num){
+    private String getRandomString(int num) {
         num = num > 0 ? num : randomString.length();
         return String.valueOf(randomString.charAt(random.nextInt(num)));
     }
 
     // 随机运算符获取
-    private String getOperatorString(int num){
+    private String getOperatorString(int num) {
         num = num > 0 ? num : operatorString.length();
         return String.valueOf(operatorString.charAt(random.nextInt(num)));
     }
@@ -168,7 +169,7 @@ public class CaptchaUtils {
                 rand = getOperatorString(random.nextInt(operatorString.length()));
             }
 
-            if (i == 2 && computedParams.get(i-1).equals("/") && rand.equals("0")) {
+            if (i == 2 && computedParams.get(i - 1).equals("/") && rand.equals("0")) {
                 while (rand.equals("0")) {
                     rand = getNumberString(random.nextInt(numberString.length()), 3);
                 }
@@ -194,6 +195,7 @@ public class CaptchaUtils {
 
     /**
      * 生成图片
+     *
      * @return
      */
     private Map<String, Object> generateImage() {
@@ -238,7 +240,7 @@ public class CaptchaUtils {
             }
         }
 
-        System.out.println("随机字符："+randomStr);
+        System.out.println("随机字符：" + randomStr);
         System.out.println("computedResult: " + computedResult);
 
         g.dispose();

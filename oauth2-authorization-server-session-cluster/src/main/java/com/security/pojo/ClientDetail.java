@@ -3,9 +3,6 @@ package com.security.pojo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.oauth2.provider.ClientDetails;
-
-import java.util.Set;
 
 @Data
 @NoArgsConstructor

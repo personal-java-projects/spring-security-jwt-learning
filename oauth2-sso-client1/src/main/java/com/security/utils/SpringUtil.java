@@ -1,10 +1,11 @@
 package com.security.utils;
 
-import com.sun.istack.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+
+import javax.validation.constraints.NotNull;
 
 /**
  *@Author: CJ

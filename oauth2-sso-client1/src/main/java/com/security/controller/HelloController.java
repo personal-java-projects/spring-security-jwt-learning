@@ -57,10 +57,10 @@ public class HelloController {
 
         // 认证中心退出请求
 //        return "redirect:" + "http://localhost:8001/author/logout" + "?" + request.getQueryString();
-        Map<String, String> urlParams = new HashMap<>();
-        urlParams.put("cookieName", "client1");
-
-        String result = RestTemplateUtils.getResponse("http://localhost:8001/author/logout", HttpMethod.GET, urlParams, new HashMap<>());
+//        Map<String, String> urlParams = new HashMap<>();
+//        urlParams.put("cookieName", "client1");
+//
+//        String result = RestTemplateUtils.getResponse("http://localhost:8001/author/logout", HttpMethod.GET, urlParams, new HashMap<>());
 
         return ResponseEntity.ok("退出成功");
     }

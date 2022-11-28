@@ -14,13 +14,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.jackson2.CoreJackson2Module;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
-import org.springframework.security.jackson2.SimpleGrantedAuthorityMixin;
-import org.springframework.security.web.jackson2.WebJackson2Module;
-import org.springframework.security.web.jackson2.WebServletJackson2Module;
-import org.springframework.security.web.server.jackson2.WebServerJackson2Module;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.time.temporal.Temporal;
 import java.util.Collection;
@@ -28,6 +23,7 @@ import java.util.Map;
 
 @Configuration
 @EnableCaching
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 86400, redisNamespace = "spring:clusterSession")
 public class RedisConfig extends CachingConfigurerSupport {
 
     @Bean

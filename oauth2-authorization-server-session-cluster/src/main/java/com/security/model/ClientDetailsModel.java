@@ -1,9 +1,7 @@
 package com.security.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -85,7 +83,7 @@ public class ClientDetailsModel implements ClientDetails {
     }
 
     public void setResourceIds(Collection<String> resourceIds) {
-        this.resourceIds = (Set)(resourceIds == null ? Collections.emptySet() : new LinkedHashSet(resourceIds));
+        this.resourceIds = (Set) (resourceIds == null ? Collections.emptySet() : new LinkedHashSet(resourceIds));
     }
 
     @Override
@@ -172,7 +170,8 @@ public class ClientDetailsModel implements ClientDetails {
     }
 
     public void setAdditionalInformation(Map<String, ?> additionalInformation) {
-        this.additionalInformation = new LinkedHashMap(additionalInformation);;
+        this.additionalInformation = new LinkedHashMap(additionalInformation);
+        ;
     }
 
     @Override

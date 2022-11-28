@@ -23,7 +23,7 @@ public class CustomAuthorityDeserializer extends JsonDeserializer {
         JsonNode jsonNode = mapper.readTree(p);//读取json数据
         List<GrantedAuthority> grantedAuthorities = new LinkedList<>();
         Iterator<JsonNode> elements = jsonNode.elements();//
-        while (elements.hasNext()){
+        while (elements.hasNext()) {
             JsonNode next = elements.next();
             JsonNode authority = next.get("authority");
             grantedAuthorities.add(new SimpleGrantedAuthority(authority.asText()));

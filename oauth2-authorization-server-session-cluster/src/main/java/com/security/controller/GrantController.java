@@ -13,17 +13,12 @@ import com.sun.deploy.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -31,20 +26,16 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
 import java.util.*;
 
 @Controller
@@ -94,6 +85,7 @@ public class GrantController {
 
     /**
      * 注册oauth2的客户端
+     *
      * @return
      */
     @PostMapping("/registerClient")
@@ -217,22 +209,21 @@ public class GrantController {
         log.info(phone + "请求获取验证码");
         // 2. 模拟调用短信平台获取验证码，以手机号为KEY，验证码为值，存入Redis，过期时间一分钟
         String code = generateRandomCode(6);
-        redisUtil.set(phone, code, 60*10);
+        redisUtil.set(phone, code, 60 * 10);
         String saveCode = (String) redisUtil.get(phone);// 缓存中的code
         Long expire = redisUtil.getExpire(phone); // 查询过期时间
         // 3. 验证码应该通过短信发给用户，这里直接返回吧
-        Map<String,String> result=new HashMap<>();
-        result.put("code",saveCode);
-        result.put("过期时间",expire+"秒");
+        Map<String, String> result = new HashMap<>();
+        result.put("code", saveCode);
+        result.put("过期时间", expire + "秒");
         return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(result);
     }
 
     private String generateRandomCode(int len) {
         Random random = new Random();
-        String result="";
-        for (int i=0;i<len;i++)
-        {
-            result+=random.nextInt(10);
+        String result = "";
+        for (int i = 0; i < len; i++) {
+            result += random.nextInt(10);
         }
 
         return result;
