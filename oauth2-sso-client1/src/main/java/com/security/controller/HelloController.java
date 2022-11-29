@@ -52,7 +52,7 @@ public class HelloController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
             // 因为我使用的单点登录认证方式是默认的session方式。
             // 这边删除客户端的cookie,客户端才算退出登录。如果需要认证服务器，只需要删除认证服务器的cookie
-            CookiesUtils.set(response, "client1", null, 0);
+//            CookiesUtils.set(response, "client1", null, 0);
         }
 
         // 认证中心退出请求
