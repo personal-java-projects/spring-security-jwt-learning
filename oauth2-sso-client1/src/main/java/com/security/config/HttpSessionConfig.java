@@ -42,7 +42,7 @@ import java.util.Map;
 @Slf4j
 @Configuration
 //  60 * 60 * 24 为 24小时
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60, redisNamespace = "spring:clusterSession")
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60, redisNamespace = "spring:client1")
 public class HttpSessionConfig {
 
     @Autowired
