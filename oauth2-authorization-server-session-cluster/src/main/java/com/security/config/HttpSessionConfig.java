@@ -11,6 +11,8 @@ import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 @Slf4j
 @Configuration
+//  60 * 60 * 24 为 24小时
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60, redisNamespace = "spring:clusterSession")
 public class HttpSessionConfig {
 
     @Autowired
