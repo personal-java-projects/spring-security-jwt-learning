@@ -4,38 +4,27 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.security.properties.RedisProperties;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisPassword;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
-import java.time.Duration;
 import java.time.temporal.Temporal;
 import java.util.Collection;
 import java.util.Map;
 
 @Configuration
 @EnableCaching
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 86400, redisNamespace = "spring:clusterSession")
 public class RedisConfig extends CachingConfigurerSupport {
-
-    @Autowired
-    private RedisProperties redisProperties;
 
     @Bean
     @Override
@@ -51,31 +40,6 @@ public class RedisConfig extends CachingConfigurerSupport {
         };
     }
 
-    @Bean
-    public LettuceConnectionFactory connectionFactory() {
-        GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
-        genericObjectPoolConfig.setMaxIdle(redisProperties.getMaxIdle());
-        genericObjectPoolConfig.setMinIdle(redisProperties.getMinIdle());
-        genericObjectPoolConfig.setMaxTotal(redisProperties.getMaxActive());
-        genericObjectPoolConfig.setMaxWaitMillis(redisProperties.getMaxWait());
-        genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(redisProperties.getShutdownTimeout());
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setDatabase(redisProperties.getDatabase());
-        redisStandaloneConfiguration.setHostName(redisProperties.getHost());
-        redisStandaloneConfiguration.setPort(redisProperties.getPort());
-        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisProperties.getPassword()));
-        LettuceClientConfiguration clientConfig = LettucePoolingClientConfiguration.builder()
-                .commandTimeout(Duration.ofMillis(redisProperties.getTimeout()))
-                .shutdownTimeout(Duration.ofMillis(redisProperties.getShutdownTimeout()))
-                .poolConfig(genericObjectPoolConfig)
-                .build();
-
-        LettuceConnectionFactory factory = new LettuceConnectionFactory(redisStandaloneConfiguration, clientConfig);
-//        factory.setShareNativeConnection(true);
-//        factory.setValidateConnection(false);
-        return factory;
-    }
-
 
     @Bean
     public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -85,13 +49,13 @@ public class RedisConfig extends CachingConfigurerSupport {
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper objectMapper = new ObjectMapper();
 
+        // 构建白名单，解决SecurityUser中的Collection类型无法序列化和反序列化的问题
         BasicPolymorphicTypeValidator basicPolymorphicTypeValidator = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType(Collection.class)
                 .allowIfSubType(Number.class)
                 .allowIfSubType(Map.class)
                 .allowIfSubType(Temporal.class)
                 .allowIfSubType(Object.class)
-                .allowIfSubType(Byte.class)
                 .allowIfSubTypeIsArray()
                 .build();
         objectMapper.activateDefaultTyping(basicPolymorphicTypeValidator, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
@@ -121,11 +85,6 @@ public class RedisConfig extends CachingConfigurerSupport {
 
         return redisTemplate;
     }
-
-//    @Bean
-//    public HttpSessionEventPublisher httpSessionEventPublisher() {
-//        return new HttpSessionEventPublisher();
-//    }
 
     /**
      * 必须在这里进行session进行redis的序列化配置
@@ -170,14 +129,6 @@ public class RedisConfig extends CachingConfigurerSupport {
 //        return jackson2JsonRedisSerializer;
         return redisTemplate.getValueSerializer();
     }
-
-//    /**
-//     * 监听session
-//     */
-//    @Bean
-//    public SessionListener redisSessionListener() {
-//        return new SessionListener();
-//    }
 
     //    /**
 //     * 设置spring session redis 序列化方式
