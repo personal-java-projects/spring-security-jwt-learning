@@ -11,6 +11,7 @@ import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 @Slf4j
 @Configuration
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60, redisNamespace = "spring:auth")
 public class HttpSessionConfig {
 
     @Autowired
