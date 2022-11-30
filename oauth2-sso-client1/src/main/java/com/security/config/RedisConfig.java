@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.security.listener.SessionListener;
 import com.security.properties.RedisProperties;
+import com.security.serializer.OAuth2AuthenticationDetailsMixin;
+import com.security.serializer.OAuth2AuthenticationMixin;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +20,13 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.filter.RequestContextFilter;
 
 import java.time.Duration;
 import java.time.temporal.Temporal;
@@ -78,6 +86,10 @@ public class RedisConfig {
         // 解决SecurityUser中没有Set方法导致的序列化失败的错误
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+//        objectMapper.addMixIn(OAuth2AuthenticationDetails.class, OAuth2AuthenticationDetailsMixin.class);
+        // OAuth2Authentication必须手动实现反序列化
+        objectMapper.addMixIn(OAuth2Authentication.class, OAuth2AuthenticationMixin.class);
+
         /**
          * 解决如下问题：
          * org.springframework.data.redis.serializer.SerializationException:
@@ -99,6 +111,39 @@ public class RedisConfig {
         redisTemplate.afterPropertiesSet();
 
         return redisTemplate;
+    }
+
+    /**
+     * 解决
+     * Could not write JSON:
+     * Error creating bean with name 'scopedTarget.accessTokenRequest':
+     * Scope 'request' is not active for the current thread;
+     * consider defining a scoped proxy for this bean if you intend to refer to it from a singleton;
+     * nested exception is java.lang.IllegalStateException: No thread-bound request found:
+     * Are you referring to request attributes outside of an actual web request,
+     * or processing a request outside of the originally receiving thread?
+     * If you are actually operating within a web request and still receive this message,
+     * your code is probably running outside of DispatcherServlet: In this case,
+     * use RequestContextListener or RequestContextFilter to expose the current request.
+     * (through reference chain: org.springframework.security.oauth2.client.DefaultOAuth2ClientContext["accessTokenRequest"]);
+     * @return
+     */
+    @Bean
+    public RequestContextListener requestContextFilter() {
+        return new RequestContextListener();
+    }
+
+//    /**
+//     * 监听session
+//     */
+//    @Bean
+//    public SessionListener redisSessionListener() {
+//        return new SessionListener();
+//    }
+
+    @Bean
+    public RedisSerializer<?> springSessionDefaultRedisSerializer(RedisTemplate<?, ?> redisTemplate) {
+        return redisTemplate.getValueSerializer();
     }
 
 }
