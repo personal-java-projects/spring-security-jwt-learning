@@ -24,6 +24,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.web.context.request.RequestContextListener;
 
 import java.time.Duration;
 import java.time.temporal.Temporal;
