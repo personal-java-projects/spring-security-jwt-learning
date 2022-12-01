@@ -1,5 +1,9 @@
 server:
   port: 1112
+  servlet:
+    session:
+      cookie:
+        name: client1
 
 spring:
   main:
@@ -38,7 +42,6 @@ mybatis:
     map-underscore-to-camel-case: true
     # ?? sql
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-#server.servlet.session.cookie.name=s1
 
 # redis参数
 redis:

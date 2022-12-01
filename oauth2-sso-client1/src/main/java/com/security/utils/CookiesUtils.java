@@ -25,6 +25,23 @@ public class CookiesUtils {
     }
 
     /**
+     * 获取请求头中所有的cookie
+     * @param request
+     * @return
+     */
+    public static Map<String, Cookie> getCookies(HttpServletRequest request) {
+        Map<String, Cookie> cookieMap = new HashMap<>();
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookieMap.put(cookie.getName(), cookie);
+            }
+        }
+
+        return cookieMap;
+    }
+
+    /**
      * 查找cookie
      * @param request HttpServletRequest
      * @param name 要查找的cookie的名称

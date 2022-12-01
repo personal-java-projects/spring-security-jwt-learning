@@ -1,34 +1,59 @@
 package com.security.controller;
 
 import cn.hutool.http.Method;
+import com.security.properties.RedisProperties;
+import com.security.utils.Base64Util;
 import com.security.utils.CookiesUtils;
 import com.security.utils.RestTemplateUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 public class HelloController {
+
+    @Autowired
+    private FindByIndexNameSessionRepository<? extends Session> sessionRepository;
+
+    @Autowired
+    private RedisProperties redisProperties;
+
     @GetMapping("/hello")
     public String hello() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName() + Arrays.toString(authentication.getAuthorities().toArray());
     }
+
+    @GetMapping("/getSession")
+    public Object getSession(HttpServletRequest request) {
+//        sessionRepository.findById();
+        Map<String, Cookie> cookies = CookiesUtils.getCookies(request);
+        log.debug("cookies: " + cookies);
+        log.debug("cookie: " + cookies.get(redisProperties.getCookieName()).getValue());
+        log.debug("sessionId: " + Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue()));
+        log.debug("session: " + sessionRepository.findById(Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue())).getMaxInactiveInterval().toMillis());
+        return sessionRepository.findById(Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue()));
+    }
+
 
     @RequestMapping("/getCurrentUser")
     public Object getCurrentUser(Authentication authentication){

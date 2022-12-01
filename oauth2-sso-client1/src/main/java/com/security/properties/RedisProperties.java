@@ -39,4 +39,7 @@ public class RedisProperties {
 
     @Value("${redis.lettuce.shutdown-timeout}")
     private int shutdownTimeout;
+
+    @Value("${server.servlet.session.cookie.name}")
+    private String cookieName;
 }

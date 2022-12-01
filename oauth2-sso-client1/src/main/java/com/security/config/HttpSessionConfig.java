@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.security.constant.SessionConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeansException;
@@ -41,8 +42,7 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
-//  60 * 60 * 24 为 24小时
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60, redisNamespace = "spring:client1")
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = SessionConstants.defaultSessionTimeout, redisNamespace = "spring:client1")
 public class HttpSessionConfig {
 
     @Autowired
