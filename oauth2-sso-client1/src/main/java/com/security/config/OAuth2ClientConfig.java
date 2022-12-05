@@ -3,6 +3,7 @@ package com.security.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -11,6 +12,7 @@ import org.springframework.security.oauth2.client.token.AccessTokenProviderChain
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -59,11 +61,18 @@ public class OAuth2ClientConfig {
 
         //设置回调成功的页面
         filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler() {
-                                                   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                                                       this.setDefaultTargetUrl("/toLogin");
-                                                       super.onAuthenticationSuccess(request, response, authentication);
-                                                   }
-                                               });
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                this.setDefaultTargetUrl("/toSuccess");
+                super.onAuthenticationSuccess(request, response, authentication);
+            }
+        });
+        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler() {
+            @Override
+            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+                this.setDefaultFailureUrl("/toFail?state=fail");
+                super.onAuthenticationFailure(request, response, exception);
+            }
+        });
         return filter;
     }
 

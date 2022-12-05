@@ -62,14 +62,24 @@ public class HelloController {
         return authentication;
     }
 
+    @RequestMapping("/toLogin")
+    public void login(HttpServletResponse response) throws IOException {
+        response.sendRedirect("http://localhost:8080/callback?state=sso");
+    }
+
     /**
      * 前端单点登录，走该接口，重定向回前端对应页面
      * @param response
      * @throws IOException
      */
-    @RequestMapping("/toLogin")
-    public void login(HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://localhost:8080/callback?state=sso");
+    @RequestMapping("/toSuccess")
+    public void success(HttpServletResponse response) throws IOException {
+        response.sendRedirect("http://localhost:8080/callback?state=ssoSuccess");
+    }
+
+    @RequestMapping("/toFail")
+    public void fail(HttpServletResponse response, @RequestParam String state) throws IOException {
+        response.sendRedirect("http://localhost:8080/callback?state=ssoFail" + state);
     }
 
     @GetMapping("/api/logout")
