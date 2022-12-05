@@ -43,6 +43,8 @@ public class HelloController {
         return authentication.getName() + Arrays.toString(authentication.getAuthorities().toArray());
     }
 
+
+
     @GetMapping("/getSession")
     public Object getSession(HttpServletRequest request) {
 //        sessionRepository.findById();
