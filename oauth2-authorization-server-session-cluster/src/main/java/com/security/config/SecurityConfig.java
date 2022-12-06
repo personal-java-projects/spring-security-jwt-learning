@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+import org.springframework.web.cors.CorsUtils;
 
 import javax.annotation.Resource;
 
@@ -44,6 +45,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
+                // 开启跨域
+                .cors()
+                .and()
                 .csrf().disable()
                 .apply(smsAuthenticationSecurityConfig)
                 .and()
@@ -54,13 +58,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureForwardUrl("/auth/loginFail")
                 .and()
                 .authorizeRequests()
+                // 放行预请求
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 // /oauth/**接口必须在用户登录之后才能访问，否则用户未登录就先校验认证，不符合逻辑
                 .antMatchers("/login", "/base-login.html", "/auth/**", "/oauth/sms", "/code/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .logout()
-                .logoutSuccessUrl("/auth/logoutSuccess")
-                .deleteCookies("JSESSIONID");
+                .anyRequest().authenticated();
 
         // session并发管理
         http

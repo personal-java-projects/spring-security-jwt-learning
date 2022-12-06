@@ -69,7 +69,7 @@ public class OAuth2ClientConfig {
         filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler() {
             @Override
             public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                this.setDefaultFailureUrl("/toFail?state=fail");
+                this.setDefaultFailureUrl("/toFail");
                 super.onAuthenticationFailure(request, response, exception);
             }
         });

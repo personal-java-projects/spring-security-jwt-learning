@@ -42,7 +42,7 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = SessionConstants.defaultSessionTimeout, redisNamespace = "spring:client1")
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = SessionConstants.defaultSessionTimeout, redisNamespace = "spring:client")
 public class HttpSessionConfig {
 
     @Autowired

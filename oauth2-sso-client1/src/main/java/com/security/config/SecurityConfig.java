@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+import org.springframework.web.cors.CorsUtils;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
@@ -53,13 +54,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
+                // 跨域配置
+                .cors()
+                .and()
+                .csrf().disable()
                 .authorizeRequests()
+                // 放行option
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                // 放行登录失败接口
+                .antMatchers("/toFail").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 // 配置自定义过滤器-注意在BasicAuthenticationFilter拦截之前处理
-                .addFilterBefore(oauth2ClientAuthenticationProcessingFilter, BasicAuthenticationFilter.class)
-                .csrf().disable();
-//                .cors();
+                .addFilterBefore(oauth2ClientAuthenticationProcessingFilter, BasicAuthenticationFilter.class);
 
         http
                 .exceptionHandling()

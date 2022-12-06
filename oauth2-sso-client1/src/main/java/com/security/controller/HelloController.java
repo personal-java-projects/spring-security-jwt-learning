@@ -78,8 +78,8 @@ public class HelloController {
     }
 
     @RequestMapping("/toFail")
-    public void fail(HttpServletResponse response, @RequestParam String state) throws IOException {
-        response.sendRedirect("http://localhost:8080/callback?state=ssoFail" + state);
+    public void fail(HttpServletResponse response) throws IOException {
+        response.sendRedirect("http://localhost:8080/callback?state=ssoFail");
     }
 
     @GetMapping("/api/logout")

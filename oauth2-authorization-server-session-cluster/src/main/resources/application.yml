@@ -2,9 +2,9 @@ server:
   port: 8001
   servlet:
     context-path: /author
-#    session:
-#      cookie:
-#        name: CENTER-SESSION
+    session:
+      cookie:
+        name: auth
 #        use-base64-encoding: false
 #        http-only: false
 #      # session有效时长 默认单位是秒  不配置默认半小时失效

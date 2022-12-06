@@ -168,3 +168,17 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 > ![img_2.png](img_2.png)
 
 > 备注三：fastJson版本得用1.2.37或者1.2.49
+
+## /oauth/authorize 授权
+### 1. form提交
+目前采用表单直接提交发起请求的方式进行授权的，因为使用ajax进行请求，会导致单点登录客户端出现如下错误：
+`Possible CSRF detected - state parameter was present but no state could be found`
+该问题还未解决。
+### 2.同意和拒绝授权
+user_oauth_approval可以不置为false，只需要将对应的scope设置为true或false,
+即能进行授权或拒绝授权。
+
+## 授权服务器登录问题
+由于使用了spring-session。当修改授权服务器的cookie的name时，授权服务器的session并未过期，
+但单点登录时，由于找不到原先的session，会进行重新登录，这时候会出现一个问题，就是明明用户名和密码都正确，
+但还是会报登陆失败的错误。
