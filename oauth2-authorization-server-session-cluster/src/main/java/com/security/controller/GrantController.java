@@ -9,7 +9,6 @@ import com.security.service.ClientService;
 import com.security.service.UserService;
 import com.security.utils.RedisUtil;
 import com.security.utils.ResponseResult;
-import com.sun.deploy.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -27,6 +27,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -111,10 +112,32 @@ public class GrantController {
     public ModelAndView getAccessConfirmation(Map<String, Object> model, HttpServletRequest request) throws Exception {
         AuthorizationRequest authorizationRequest = (AuthorizationRequest) model.get("authorizationRequest");
 
+        Set<String> scopesToApprove = new LinkedHashSet<>();
+        ClientDetails clientDetails = clientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
+
+        // 获取登录信息
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        for (String scope:authorizationRequest.getScope()) {
+            for (String requestedScope : StringUtils.delimitedListToStringArray(scope, " ")) {
+                if (clientDetails.getScope().contains(requestedScope)) {
+                    scopesToApprove.add(requestedScope);
+                }
+            }
+        }
+
+        Set<ScopeWithDescription> scopeWithDescriptions = withDescription(scopesToApprove);
+
         ModelAndView view = new ModelAndView();
+
+        view.addObject("clientId", clientDetails.getClientId());
+        view.addObject("principalName", auth.getName());
+        view.addObject("scopes", scopeWithDescriptions);
+        view.addObject("state", authorizationRequest.getState());
+        view.addObject("redirectUri", clientDetails.getRegisteredRedirectUri().iterator().next());
+
+
         view.setViewName("/grant");
-        view.addObject("clientId", authorizationRequest.getClientId());
-        view.addObject("scopes", authorizationRequest.getScope());
 
         return view;
     }
@@ -166,7 +189,7 @@ public class GrantController {
         resultMap.put("refresh_token", accessToken.getRefreshToken());
         resultMap.put("token_type", accessToken.getTokenType());
         resultMap.put("expires_in", accessToken.getExpiresIn());
-        resultMap.put("scope", StringUtils.join(accessToken.getScope(), ","));
+        resultMap.put("scope", StringUtils.splitArrayElementsIntoProperties(accessToken.getScope().toArray(new String[accessToken.getScope().size()]), ","));
         resultMap.putAll(accessToken.getAdditionalInformation());
 
         OAuth2Authentication authentication = tokenStore.readAuthentication(accessToken);
@@ -251,6 +274,49 @@ public class GrantController {
             throw new BadCredentialsException("Invalid basic authentication token");
         }
         return new String[]{token.substring(0, delimiter), token.substring(delimiter + 1)};
+    }
+
+    private static Set<ScopeWithDescription> withDescription(Set<String> scopes) {
+        Set<ScopeWithDescription> scopeWithDescriptions = new LinkedHashSet<>();
+        for (String scope : scopes) {
+            scopeWithDescriptions.add(new ScopeWithDescription(scope));
+
+        }
+        return scopeWithDescriptions;
+    }
+
+    public static class ScopeWithDescription {
+        private static final String DEFAULT_DESCRIPTION = "我们无法提供有关此权限的信息";
+        private static final Map<String, String> scopeDescriptions = new HashMap<>();
+
+        static {
+            scopeDescriptions.put(
+                    "all",
+                    "所有权限"
+            );
+            scopeDescriptions.put(
+                    "profile",
+                    "验证您的身份"
+            );
+            scopeDescriptions.put(
+                    "message.read",
+                    "了解您可以访问哪些权限"
+            );
+            scopeDescriptions.put(
+                    "message.write",
+                    "代表您行事"
+            );
+        }
+
+        public final String scope;
+        public final boolean value;
+        public final String description;
+
+        ScopeWithDescription(String scope) {
+            this.scope = scope;
+            this.value = true;
+            this.description = scopeDescriptions.getOrDefault(scope, DEFAULT_DESCRIPTION);
+        }
     }
 
 //    @GetMapping("/logoutSuccess")

@@ -23,7 +23,7 @@ security:
       client-id: client4
       user-authorization-uri: http://localhost:8001/author/oauth/authorize
       access-token-uri: http://localhost:8001/author/oauth/token
-      scope: all
+      scope: profile,message.read
       # 支持此处配置重定向地址，为true时，pre-established-redirect-uri不生效
       use-current-uri: false
 #      # 这里必须要回到客户端的登录地址，否则客户端无法校验是否登录成功，导致客户端实际并没有登录成功
