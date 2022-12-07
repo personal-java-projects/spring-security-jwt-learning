@@ -24,7 +24,8 @@ public class JwtTokenConfig {
         JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
         KeyStoreKeyFactory keyStoreKeyFactory =
                 new KeyStoreKeyFactory(new ClassPathResource("secret.jks"), "hxs:1996".toCharArray());
-        accessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair("hxs:1996"));
+        System.out.println("keyStoreKeyFactory: " + keyStoreKeyFactory.getKeyPair("secret"));
+        accessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair("secret"));
         return accessTokenConverter;
     }
 
