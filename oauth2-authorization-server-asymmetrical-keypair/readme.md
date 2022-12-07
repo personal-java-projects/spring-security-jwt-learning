@@ -182,3 +182,6 @@ user_oauth_approval可以不置为false，只需要将对应的scope设置为tru
 由于使用了spring-session。当修改授权服务器的cookie的name时，授权服务器的session并未过期，
 但单点登录时，由于找不到原先的session，会进行重新登录，这时候会出现一个问题，就是明明用户名和密码都正确，
 但还是会报登陆失败的错误。
+
+## 非对称密钥生成命令
+`keytool -genkeypair -alias secret -keyalg RSA -keypass hxs:1996 -keystore secret.jks -storepass hxs:1996`
