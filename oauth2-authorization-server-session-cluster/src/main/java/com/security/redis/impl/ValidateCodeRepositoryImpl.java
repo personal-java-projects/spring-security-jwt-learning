@@ -2,6 +2,7 @@ package com.security.redis.impl;
 
 import com.security.exception.ValidateCodeException;
 import com.security.redis.ValidateCodeRepository;
+import com.security.utils.RedisUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -21,23 +22,22 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class ValidateCodeRepositoryImpl implements ValidateCodeRepository {
 
-    private final @NonNull RedisTemplate<String, String> redisTemplate;
+    private final @NonNull RedisUtil redisUtil;
 
     @Override
     public void save(String phoneOrEmail, String code, String type) {
-        redisTemplate.opsForValue().set(buildKey(phoneOrEmail, type), code,
-                //  有效期可以从配置文件中读取或者请求中读取
-                Duration.ofMinutes(10).getSeconds(), TimeUnit.SECONDS);
+        //  有效期可以从配置文件中读取或者请求中读取
+        redisUtil.set(buildKey(phoneOrEmail, type), code, Duration.ofMinutes(10).getSeconds());
     }
 
     @Override
     public String get(String phoneOrEmail, String type) {
-        return redisTemplate.opsForValue().get(buildKey(phoneOrEmail, type));
+        return (String) redisUtil.get(buildKey(phoneOrEmail, type));
     }
 
     @Override
     public void remove(String phoneOrEmail, String type) {
-        redisTemplate.delete(buildKey(phoneOrEmail, type));
+        redisUtil.del(buildKey(phoneOrEmail, type));
     }
 
     private String buildKey(String phoneOrEmail, String type) {

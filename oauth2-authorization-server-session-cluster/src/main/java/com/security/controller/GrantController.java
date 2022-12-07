@@ -142,9 +142,10 @@ public class GrantController {
         log.info(phone + "请求获取验证码");
         // 2. 模拟调用短信平台获取验证码，以手机号为KEY，验证码为值，存入Redis，过期时间一分钟
         String code = generateRandomCode(6);
-        redisUtil.set(phone, code, 60 * 10);
-        String saveCode = (String) redisUtil.get(phone);// 缓存中的code
-        Long expire = redisUtil.getExpire(phone); // 查询过期时间
+        String key = "code:sms" + ":" + phone;
+        redisUtil.set(key, code, 60 * 10);
+        String saveCode = (String) redisUtil.get(key);// 缓存中的code
+        Long expire = redisUtil.getExpire(key); // 查询过期时间
         // 3. 验证码应该通过短信发给用户，这里直接返回吧
         Map<String, String> result = new HashMap<>();
         result.put("code", saveCode);

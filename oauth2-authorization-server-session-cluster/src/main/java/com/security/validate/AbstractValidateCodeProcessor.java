@@ -38,6 +38,7 @@ public abstract class AbstractValidateCodeProcessor implements ValidateCodeProce
     @Override
     public void validate(ServletWebRequest request) {
         String type = getValidateCodeType(request);
+        String requestCode = request.getParameter("code");
         String phoneOrEmail = request.getParameter("phoneOrEmail");
         String code = validateCodeRepository.get(phoneOrEmail, type);
         // 验证码是否存在
@@ -45,7 +46,7 @@ public abstract class AbstractValidateCodeProcessor implements ValidateCodeProce
             throw new ValidateCodeException("获取验证码失败，请检查输入是否正确或重新发送！");
         }
         // 验证码输入是否正确
-        if (!code.equalsIgnoreCase(request.getParameter("code"))) {
+        if (!code.equalsIgnoreCase(requestCode)) {
             throw new ValidateCodeException("验证码不正确，请重新输入！");
         }
         // 验证通过后，清除验证码

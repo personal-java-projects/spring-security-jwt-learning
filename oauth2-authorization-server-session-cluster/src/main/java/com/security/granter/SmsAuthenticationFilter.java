@@ -30,24 +30,24 @@ public class SmsAuthenticationFilter extends AbstractAuthenticationProcessingFil
             throw new AuthenticationServiceException(
                     "Authentication method not supported: " + request.getMethod());
         }
-        // 获取参数
-        String sms = obtainSms(request);
-        sms = sms == null ? "" : sms.trim();
+        // 获取手机号或邮箱
+        String phoneOrEmail = obtainSms(request);
+        phoneOrEmail = phoneOrEmail == null ? "" : phoneOrEmail.trim();
         // 我们需要创建我们自己的授权 token
-        SmsAuthenticationToken authRequest = new SmsAuthenticationToken(sms);
+        SmsAuthenticationToken authRequest = new SmsAuthenticationToken(phoneOrEmail);
         setDetails(request, authRequest);
         // 授权管理器对请求进行授权
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 
     /**
-     * 获取请求中的 sms 值
+     * 获取请求中的 手机号
      *
      * @param request 正在为其创建身份验证请求
-     * @return 请求中的 sms 值
+     * @return 请求中的 phoneOrEmail 值
      */
     private String obtainSms(HttpServletRequest request) {
-        return request.getParameter("sms");
+        return request.getParameter("phoneOrEmail");
     }
 
     /**
