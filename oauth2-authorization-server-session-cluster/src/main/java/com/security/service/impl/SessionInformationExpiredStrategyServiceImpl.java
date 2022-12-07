@@ -17,6 +17,6 @@ public class SessionInformationExpiredStrategyServiceImpl implements SessionInfo
 
     @Override
     public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
-        ResponseUtils.result(event.getResponse(), ResponseResult.builder().error("你的账号在另一地点被登录"));
+        ResponseUtils.result(event.getResponse(), ResponseResult.builder().error("你的账号在另一地点被登录").build());
     }
 }

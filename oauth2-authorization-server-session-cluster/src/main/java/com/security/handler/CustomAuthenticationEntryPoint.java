@@ -20,7 +20,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         log.error("Authentication异常: [{}], [{}], [{}]", request.getRequestURI(), exception.getMessage(), exception);
 
-        ResponseUtils.result(response, ResponseResult.builder().error(401, exception.getMessage()));
+        ResponseUtils.result(response, ResponseResult.builder().error(401, exception.getMessage()).build());
     }
 }
 

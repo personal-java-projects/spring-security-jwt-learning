@@ -6,10 +6,9 @@ import lombok.Data;
 
 /**
  * 自定义数据格式
- *
+ * 使用建造者模式重写了
  * @param <T>
  */
-@Data
 public class ResponseResult<T> {
     /**
      * 响应代码
@@ -26,142 +25,148 @@ public class ResponseResult<T> {
      */
     private T data;
 
-    public ResponseResult() {
+    public static <T> Builder<T> builder() {
+        return new Builder<T>();
     }
 
-    public ResponseResult(Integer code, String message) {
+    public ResponseResult(Builder<T> builder) {
+        this.code = builder.code;
+        this.message = builder.message;
+        this.data = builder.data;
+    }
+
+    public Integer getCode() {
+        return this.code;
+    }
+
+    public void setCode(Integer code) {
         this.code = code;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public void setMessage(String message) {
         this.message = message;
     }
 
-    public ResponseResult(Integer code, String message, T data) {
-        this.code = code;
-        this.message = message;
+    public T getData() {
+        return this.data;
+    }
+
+    public void setData(T data) {
         this.data = data;
     }
 
     /**
-     * 对象构造器，创建一个ResponseResult对象用来链式调用
-     *
-     * @return
+     * 建造者 内部静态类
+     * @param <R>
      */
-    public static ResponseResult builder() {
-        ResponseResult responseResult = new ResponseResult();
+    public static final class Builder<R> {
 
-        return responseResult;
-    }
+        /**
+         * 响应代码
+         */
+        private Integer code;
 
-    /**
-     * 设置状态码
-     */
-    public ResponseResult code(Integer code) {
-        this.setCode(code);
+        /**
+         * 响应消息
+         */
+        private String message;
 
-        return this;
-    }
+        /**
+         * 响应结果
+         */
+        private R data;
 
+        public Builder() {}
 
-    /**
-     * 设置响应消息
-     */
-    public ResponseResult message(String message) {
-        this.setMessage(message);
+        public Builder<R> code(Integer code) {
+            this.code = code;
 
-        return this;
-    }
+            return this;
+        }
 
-    /**
-     * 设置响应数据
-     */
-    public ResponseResult data(T data) {
-        this.setData(data);
+        public Builder<R> message(String message) {
+            this.message = message;
 
-        return this;
-    }
+            return this;
+        }
 
-    /**
-     * 成功
-     *
-     * @param
-     * @return
-     */
-    public ResponseResult success() {
-        this.setCode(CodeEnum.SUCCESS.getCode());
-        this.setMessage(CodeEnum.SUCCESS.getMessage());
-        this.setData(null);
+        public Builder<R> data(R data) {
+            this.data = data;
 
-        return this;
-    }
+            return this;
+        }
 
-    /**
-     * 成功
-     *
-     * @param data
-     * @return
-     */
-    public ResponseResult success(T data) {
-        this.setCode(CodeEnum.SUCCESS.getCode());
-        this.setMessage(CodeEnum.SUCCESS.getMessage());
-        this.setData(data);
+        public Builder<R> ok() {
+            this.code = CodeEnum.SUCCESS.getCode();
+            this.message = CodeEnum.SUCCESS.getMessage();
+            this.data = null;
 
-        return this;
-    }
+            return this;
+        }
 
-    /**
-     * 成功
-     *
-     * @param data
-     * @return
-     */
-    public ResponseResult success(String message, T data) {
-        this.setCode(CodeEnum.SUCCESS.getCode());
-        this.setMessage(message);
-        this.setData(data);
+        public Builder<R> ok(R data) {
+            this.code = CodeEnum.SUCCESS.getCode();
+            this.message = CodeEnum.SUCCESS.getMessage();
+            this.data = data;
 
-        return this;
-    }
+            return this;
+        }
 
-    /**
-     * 失败
-     *
-     * @param errorInfo
-     * @return
-     */
-    public ResponseResult error(T data) {
-        this.setCode(CodeEnum.BODY_NOT_MATCH.getCode());
-        this.setMessage(CodeEnum.BODY_NOT_MATCH.getMessage());
-        this.setData(null);
+        public Builder<R> ok(String message, R data) {
+            this.code = CodeEnum.SUCCESS.getCode();
+            this.message = message;
+            this.data = data;
 
-        return this;
-    }
+            return this;
+        }
 
-    /**
-     * 失败
-     *
-     * @param code
-     * @param message
-     * @return
-     */
-    public ResponseResult error(Integer code, String message) {
-        this.setCode(code);
-        this.setMessage(message);
-        this.setData(null);
+        public Builder<R> error() {
+            this.code = CodeEnum.BODY_NOT_MATCH.getCode();
+            this.message = CodeEnum.BODY_NOT_MATCH.getMessage();
+            this.data = null;
 
-        return this;
-    }
+            return this;
+        }
 
-    /**
-     * 失败
-     *
-     * @param message
-     * @return
-     */
-    public ResponseResult error(String message) {
-        this.setCode(CodeEnum.BODY_NOT_MATCH.getCode());
-        this.setMessage(message);
-        this.setData(null);
+        public Builder<R> error(String message) {
+            this.code = CodeEnum.BODY_NOT_MATCH.getCode();
+            this.message = message;
+            this.data = null;
 
-        return this;
+            return this;
+        }
+
+        public Builder<R> error(Integer code, String message) {
+            this.code = code;
+            this.message = message;
+            this.data = null;
+
+            return this;
+        }
+
+        public Builder<R> fail() {
+            this.code = CodeEnum.INTERNAL_SERVER_ERROR.getCode();
+            this.message = CodeEnum.INTERNAL_SERVER_ERROR.getMessage();
+            this.data = null;
+
+            return this;
+        }
+
+        public Builder<R> fail(String message) {
+            this.code = CodeEnum.INTERNAL_SERVER_ERROR.getCode();
+            this.message = message;
+            this.data = null;
+
+            return this;
+        }
+
+        public ResponseResult<R> build() {
+            return new ResponseResult<>(this);
+        }
     }
 
     @Override

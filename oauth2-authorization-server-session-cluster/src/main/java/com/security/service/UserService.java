@@ -11,11 +11,5 @@ import java.util.Map;
 public interface UserService extends UserDetailsService {
     void registerUser(LoginRegisterForm form);
 
-    void checkLogin(SecurityUser securityUser);
-
-    Map<String, Object> login(LoginRegisterForm form);
-
     void getRandomCode(HttpServletResponse response) throws IOException;
-
-    SecurityUser getUserByUsernameAndPassword(String username, String password);
 }

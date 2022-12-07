@@ -26,7 +26,7 @@ public class SmsFailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         System.out.println("AuthenticationException: " + exception);
 
-        ResponseUtils.result(response, ResponseResult.builder().error(exception.getMessage()));
+        ResponseUtils.result(response, ResponseResult.builder().error(exception.getMessage()).build());
 
 //        if (exception instanceof UnapprovedClientAuthenticationException) {
 //            ResponseUtils.result(response, ResponseResult.builder().error(exception.getMessage()));

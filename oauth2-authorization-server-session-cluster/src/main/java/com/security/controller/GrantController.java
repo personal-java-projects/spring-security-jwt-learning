@@ -6,6 +6,7 @@ import com.security.model.LoginRegisterForm;
 import com.security.model.SecurityUser;
 import com.security.pojo.ClientDetail;
 import com.security.service.ClientService;
+import com.security.service.OauthService;
 import com.security.service.UserService;
 import com.security.utils.RedisUtil;
 import com.security.utils.ResponseResult;
@@ -46,31 +47,13 @@ import java.util.*;
 public class GrantController {
 
     @Autowired
-    private ClientDetailsService clientDetailsService;
-
-    @Autowired
     private ClientService clientService;
 
     @Autowired
     private UserService userService;
-//
-//    @Bean
-//    private SessionRegistry sessionRegistry() {
-//        return new SessionRegistryImpl();
-//    }
-
-    /**
-     * 因为项目集成了jwt，不能直接使用TokenStore，它是接口
-     */
-    @Qualifier("jwtTokenStore")
-    @Autowired
-    private TokenStore tokenStore;
 
     @Autowired
-    private TokenEndpoint tokenEndpoint;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private OauthService oauthService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -81,7 +64,7 @@ public class GrantController {
 
         userService.registerUser(form);
 
-        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage());
+        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).build();
     }
 
     /**
@@ -97,49 +80,32 @@ public class GrantController {
 
         clientService.addClient(clientDetail);
 
-        return null;
+        return ResponseResult.builder().ok().build();
     }
 
     /**
      * 自定义授权页面thymeleaf
      *
-     * @param model
      * @param request
+     * @param modelAndView
      * @return
      * @throws Exception
      */
     @RequestMapping("/confirm_access")
-    public ModelAndView getAccessConfirmation(Map<String, Object> model, HttpServletRequest request) throws Exception {
-        AuthorizationRequest authorizationRequest = (AuthorizationRequest) model.get("authorizationRequest");
+    public ModelAndView getAccessConfirmation(Map<String, Object> request, ModelAndView modelAndView) throws Exception {
+        AuthorizationRequest authorizationRequest = (AuthorizationRequest) request.get("authorizationRequest");
 
-        Set<String> scopesToApprove = new LinkedHashSet<>();
-        ClientDetails clientDetails = clientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
+        Map<String, Object> confirmInformation = oauthService.getConfirmInformation(authorizationRequest);
 
-        // 获取登录信息
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        modelAndView.addObject("clientId", confirmInformation.get("clientId"));
+        modelAndView.addObject("principalName", confirmInformation.get("principalName"));
+        modelAndView.addObject("scopes", confirmInformation.get("scopes"));
+        modelAndView.addObject("state", confirmInformation.get("state"));
+        modelAndView.addObject("redirectUri", confirmInformation.get("redirectUri"));
 
-        for (String scope:authorizationRequest.getScope()) {
-            for (String requestedScope : StringUtils.delimitedListToStringArray(scope, " ")) {
-                if (clientDetails.getScope().contains(requestedScope)) {
-                    scopesToApprove.add(requestedScope);
-                }
-            }
-        }
+        modelAndView.setViewName("/grant");
 
-        Set<ScopeWithDescription> scopeWithDescriptions = withDescription(scopesToApprove);
-
-        ModelAndView view = new ModelAndView();
-
-        view.addObject("clientId", clientDetails.getClientId());
-        view.addObject("principalName", auth.getName());
-        view.addObject("scopes", scopeWithDescriptions);
-        view.addObject("state", authorizationRequest.getState());
-        view.addObject("redirectUri", clientDetails.getRegisteredRedirectUri().iterator().next());
-
-
-        view.setViewName("/grant");
-
-        return view;
+        return modelAndView;
     }
 
     @GetMapping("/getCode")
@@ -150,74 +116,18 @@ public class GrantController {
     @PostMapping("/token")
     @ResponseBody
     public ResponseResult postAccessToken(HttpServletRequest request, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
-        ClientDetails client;
-        String clientId;
 
-        // 1. 获取客户端认证信息
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.toLowerCase().startsWith("basic ")) {
-            clientId = parameters.get("client_id");
-        } else {
-            // 解密请求头
-            String[] clients = extractAndDecodeHeader(header);
-            if (clients.length != 2) {
-                throw new BadCredentialsException("Invalid basic authentication token");
-            }
-
-            clientId = clients[0];
-        }
-
-        // 从数据库获取客户端数据
-        client = clientDetailsService.loadClientByClientId(clientId);
-
-        // 将ClientDetails类转为用户类
-        SecurityUser securityUser = new SecurityUser();
-        securityUser.setUsername(client.getClientId());
-        securityUser.setPassword(client.getClientSecret());
-        securityUser.setAuthorities(new ArrayList<>());
-
-        // 将客户端类转换为UsernamePasswordAuthenticationToken
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(securityUser, null, new ArrayList<>());
-
-        // 对应授权类型所需的parameters参数要完整
-        OAuth2AccessToken accessToken = tokenEndpoint.postAccessToken(usernamePasswordAuthenticationToken, parameters).getBody();
-
-        Map<String, Object> resultMap = new HashMap<>();
-
-        // token信息
-        resultMap.put("access_token", accessToken.getValue());
-        resultMap.put("refresh_token", accessToken.getRefreshToken());
-        resultMap.put("token_type", accessToken.getTokenType());
-        resultMap.put("expires_in", accessToken.getExpiresIn());
-        resultMap.put("scope", StringUtils.splitArrayElementsIntoProperties(accessToken.getScope().toArray(new String[accessToken.getScope().size()]), ","));
-        resultMap.putAll(accessToken.getAdditionalInformation());
-
-        OAuth2Authentication authentication = tokenStore.readAuthentication(accessToken);
-        Authentication userAuthentication = authentication.getUserAuthentication();
-        Collection<? extends GrantedAuthority> authorities = userAuthentication.getAuthorities();
-        // 权限信息
-        List<String> list = new ArrayList<>();
-        for (GrantedAuthority authority : authorities) {
-            list.add(authority.getAuthority());
-        }
-
-        resultMap.put("authorities", list);
+        Map<String, Object> token = oauthService.getToken(request, parameters);
 
 
-        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(resultMap);
+        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(token).build();
     }
 
     @RequestMapping("/loginFail")
-    public ModelAndView loginFail() {
-        ModelAndView modelAndView = new ModelAndView();
+    public ModelAndView loginFail(ModelAndView modelAndView) {
         modelAndView.setViewName("/login-fail");
         modelAndView.addObject("message", "用户名或密码错误");
         return modelAndView;
-    }
-
-    @PostMapping(value = "/login")
-    public ResponseResult login(@RequestBody LoginRegisterForm req) throws HttpRequestMethodNotSupportedException {
-        return null;
     }
 
     @GetMapping("/getCaptcha")
@@ -239,7 +149,7 @@ public class GrantController {
         Map<String, String> result = new HashMap<>();
         result.put("code", saveCode);
         result.put("过期时间", expire + "秒");
-        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(result);
+        return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(result).build();
     }
 
     private String generateRandomCode(int len) {
@@ -251,111 +161,4 @@ public class GrantController {
 
         return result;
     }
-
-    /**
-     * 对请求头进行解密以及解析
-     *
-     * @param header 请求头
-     * @return 客户端信息
-     */
-    private String[] extractAndDecodeHeader(String header) {
-        byte[] base64Token = header.substring(6).getBytes(StandardCharsets.UTF_8);
-        byte[] decoded;
-        try {
-            decoded = Base64.getDecoder().decode(base64Token);
-        } catch (IllegalArgumentException e) {
-            throw new BadCredentialsException(
-                    "Failed to decode basic authentication token");
-        }
-        String token = new String(decoded, StandardCharsets.UTF_8);
-        int delimiter = token.indexOf(":");
-
-        if (delimiter == -1) {
-            throw new BadCredentialsException("Invalid basic authentication token");
-        }
-        return new String[]{token.substring(0, delimiter), token.substring(delimiter + 1)};
-    }
-
-    private static Set<ScopeWithDescription> withDescription(Set<String> scopes) {
-        Set<ScopeWithDescription> scopeWithDescriptions = new LinkedHashSet<>();
-        for (String scope : scopes) {
-            scopeWithDescriptions.add(new ScopeWithDescription(scope));
-
-        }
-        return scopeWithDescriptions;
-    }
-
-    public static class ScopeWithDescription {
-        private static final String DEFAULT_DESCRIPTION = "我们无法提供有关此权限的信息";
-        private static final Map<String, String> scopeDescriptions = new HashMap<>();
-
-        static {
-            scopeDescriptions.put(
-                    "all",
-                    "所有权限"
-            );
-            scopeDescriptions.put(
-                    "profile",
-                    "验证您的身份"
-            );
-            scopeDescriptions.put(
-                    "message.read",
-                    "了解您可以访问哪些权限"
-            );
-            scopeDescriptions.put(
-                    "message.write",
-                    "代表您行事"
-            );
-        }
-
-        public final String scope;
-        public final boolean value;
-        public final String description;
-
-        ScopeWithDescription(String scope) {
-            this.scope = scope;
-            this.value = true;
-            this.description = scopeDescriptions.getOrDefault(scope, DEFAULT_DESCRIPTION);
-        }
-    }
-
-//    @GetMapping("/logoutSuccess")
-//    @ResponseBody
-//    public ResponseResult logoutSuccess(HttpServletRequest request, HttpServletResponse response, HttpSession httpSession, Authentication authentication) {
-//        System.out.println("1111");
-//
-//        System.out.println("request" + request.getQueryString());
-//
-//        List<Object> principals = sessionRegistry().getAllPrincipals();
-//        //退出成功后删除当前用户session
-//        for (Object principal : principals) {
-//            if (principal instanceof SecurityUser) {
-//                final SecurityUser loggedUser = (SecurityUser) principal;
-//                if (authentication.getName().equals(loggedUser.getUsername())) {
-//                    List<SessionInformation> sessionsInfo = sessionRegistry().getAllSessions(principal, false);
-//                    if (null != sessionsInfo && sessionsInfo.size() > 0) {
-//                        for (SessionInformation sessionInformation : sessionsInfo) {
-//                            sessionInformation.expireNow();
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        if (auth != null) {//清除认证
-//            SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
-//            securityContextLogoutHandler.setInvalidateHttpSession(true);
-//            auth.setAuthenticated(false);
-//            httpSession.invalidate();
-//
-//            // 清除认证信息
-//            securityContextLogoutHandler.setClearAuthentication(true);
-//            securityContextLogoutHandler.logout(request, response, auth);
-//
-//            System.out.println("logout" + auth.isAuthenticated());
-//        }
-//        return ResponseResult.builder().success();
-//    }
-
 }

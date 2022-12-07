@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     public ResponseResult bizExceptionHandler(HttpServletRequest req, BizException e) {
         logger.error("发生业务异常！原因是：", e.getLocalizedMessage());
 
-        return ResponseResult.builder().code(e.getErrorCode()).message(e.getMessage());
+        return ResponseResult.builder().code(e.getErrorCode()).message(e.getMessage()).build();
     }
 
     /**
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     public ResponseResult exceptionHandler(HttpServletRequest req, NullPointerException e) {
         logger.error("发生空指针异常！原因是: ", e.getLocalizedMessage());
 
-        return ResponseResult.builder().code(CodeEnum.BODY_NOT_MATCH.getCode()).message(Messages.NULL_EXCEPTION);
+        return ResponseResult.builder().code(CodeEnum.BODY_NOT_MATCH.getCode()).message(Messages.NULL_EXCEPTION).build();
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
 
         response.setStatus(CodeEnum.INTERNAL_SERVER_ERROR.getCode());
 
-        return ResponseResult.builder().code(CodeEnum.INTERNAL_SERVER_ERROR.getCode()).message(e.getBindingResult().getFieldError().getDefaultMessage());
+        return ResponseResult.builder().code(CodeEnum.INTERNAL_SERVER_ERROR.getCode()).message(e.getBindingResult().getFieldError().getDefaultMessage()).build();
     }
 
 
@@ -94,6 +94,6 @@ public class GlobalExceptionHandler {
     public ResponseResult exceptionHandler(HttpServletRequest req, Exception e) {
         logger.error("未知异常！原因是: ", e.getLocalizedMessage());
 
-        return ResponseResult.builder().code(CodeEnum.INTERNAL_SERVER_ERROR.getCode()).message(e.getMessage());
+        return ResponseResult.builder().code(CodeEnum.INTERNAL_SERVER_ERROR.getCode()).message(e.getMessage()).build();
     }
 }

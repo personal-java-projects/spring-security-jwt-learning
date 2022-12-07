@@ -58,7 +58,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
                         .validate(new ServletWebRequest(request, response));
             } catch (Exception e) {
                 e.printStackTrace();
-                ResponseUtils.result(response, ResponseResult.builder().error(e.getMessage()));
+                ResponseUtils.result(response, ResponseResult.builder().error(e.getMessage()).build());
                 return;
             }
         }

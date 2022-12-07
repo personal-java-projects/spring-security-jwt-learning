@@ -21,7 +21,7 @@ public class SmsValidateCodeProcessor extends AbstractValidateCodeProcessor {
     @Override
     protected void send(ServletWebRequest request, String phone, String validateCode) throws TencentCloudSDKException, IOException {
         smsUtils.builder().sendSmsCode(phone, validateCode);
-        ResponseUtils.result(request.getResponse(), ResponseResult.builder().success(null));
+        ResponseUtils.result(request.getResponse(), ResponseResult.builder().ok().build());
         System.out.println(phone +
                 "手机验证码发送成功，验证码为：" + validateCode);
     }

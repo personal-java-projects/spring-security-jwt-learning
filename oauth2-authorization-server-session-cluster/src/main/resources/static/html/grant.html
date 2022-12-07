@@ -7,10 +7,32 @@
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 </head>
 <style>
+    html. body {
+        margin:  0;
+        padding: 0;
+    }
+
     body {
         background-color: #f6f8fa;
-        width: 100vw;
+        width: 100%;
         min-height: 100vh;
+        text-align: center;
+    }
+
+    .container {
+        box-sizing: border-box;
+        width: 500px;
+        max-height: 600px;
+        padding: 50px 0;
+    }
+
+    .form-wrap {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 10px 20px;
+        border: #cccccc 1px solid;
+        border-radius: 10px;
+        text-align: start;
     }
 
     p {
@@ -53,24 +75,27 @@
         right: 0;
         bottom: 0;
         background-color: rgba(255, 255, 255, 0);
-        z-index: -9;
     }
     .toast-position {
         position: absolute;
         top: 15vh;
-        right: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgb(105, 105, 105);
+        color: #fff;
+        padding: 5px 10px;
         z-index: 999;
     }
 </style>
-<body style="margin: 0px">
+<body>
 <div class="toast-wrap">
     <div class="toast toast-position">
-        <span class="toast-body">请勾选相关权限</span>
+        <span class="toast-body">请先勾选相关权限</span>
     </div>
 </div>
-<div style="width: 500px;max-height: 600px;margin: 50px auto">
+<div class="container">
     <h5 style="text-align: center"><b th:text="${clientId}"></b>希望获得以下许可：</h5>
-    <div style="width: 100%;box-sizing:border-box;padding:10px 20px;border: #cccccc 1px solid;border-radius: 10px">
+    <div class="form-wrap">
         <form name="consent_form" method="post" action="/author/oauth/authorize" onsubmit="return confirmConsent()">
             <input type="hidden" name="user_oauth_approval" value="true">
             <input type="hidden" name="client_id" th:value="${clientId}">
@@ -131,14 +156,13 @@
 
 
         if (checked.length < scopes.length) {
-            console.log(checked.length, scopes.length)
 
-            return false
+            return true
         }
 
         if (checked.length >= scopes.length) {
             $('.toast').toast('show')
-            console.log("1222")
+
             return false
         }
     }

@@ -1,6 +1,10 @@
 package com.security.constant;
 
 public class JwtConstant {
+
+    /**
+     * @Feild: token前缀，本项目未用着
+     */
     public static final String TOKEN_PREFIX = "Bearer ";
 
     /**

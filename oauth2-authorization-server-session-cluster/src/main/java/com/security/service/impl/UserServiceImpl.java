@@ -103,26 +103,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void checkLogin(SecurityUser securityUser) {
-
-    }
-
-    @Override
-    public Map<String, Object> login(LoginRegisterForm form) {
-        return null;
-    }
-
-    @Override
     public void getRandomCode(HttpServletResponse response) throws IOException {
         // getRandomCodeImage方法会直接将生成的验证码图片写入response，3代表算术验证码只有两个因子
         String randomResult = CaptchaUtils.builder().arithmetic(3).getRandomCodeImage(response);
 //        String randomResult = CaptchaUtils.builder().getRandomCodeImage(response);
         redisUtil.set(RedisConstant.REDIS_UMS_PREFIX, randomResult, RedisConstant.REDIS_UMS_EXPIRE);
-    }
-
-    @Override
-    public SecurityUser getUserByUsernameAndPassword(String username, String password) {
-//        User user = userMapper.selectUserByUsernameAndPassword();
-        return null;
     }
 }
