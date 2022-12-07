@@ -1,5 +1,6 @@
 package com.security.model;
 
+import com.security.pojo.ClientDetail;
 import lombok.Data;
 import lombok.ToString;
 

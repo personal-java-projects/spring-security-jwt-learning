@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface ClientDetailMapper {
 
-    String insertClientDetail(ClientDetail clientDetail);
+    void insertClientDetail(ClientDetail clientDetail);
 
     ClientDetail selectClientDetailByClientId(@Param("clientId") String clientId);
 }
