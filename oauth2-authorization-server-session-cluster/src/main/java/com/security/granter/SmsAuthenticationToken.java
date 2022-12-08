@@ -19,13 +19,13 @@ public class SmsAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object principal;
 
-    SmsAuthenticationToken(Object phone) {
+    public SmsAuthenticationToken(Object phone) {
         super(null);
         this.principal = phone;
         setAuthenticated(false);
     }
 
-    SmsAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
+    public SmsAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
         super.setAuthenticated(true);
