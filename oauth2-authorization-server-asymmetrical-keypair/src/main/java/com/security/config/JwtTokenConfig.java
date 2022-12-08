@@ -1,5 +1,7 @@
 package com.security.config;
 
+import com.security.properties.SecretProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +15,9 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 @Configuration
 public class JwtTokenConfig {
 
+    @Autowired
+    private SecretProperties secretProperties;
+
     @Bean(name = "jwtTokenStore")
     public TokenStore tokenStore() {
         return new JwtTokenStore(jwtAccessTokenConverter());
@@ -23,9 +28,9 @@ public class JwtTokenConfig {
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
         KeyStoreKeyFactory keyStoreKeyFactory =
-                new KeyStoreKeyFactory(new ClassPathResource("secret.jks"), "hxs:1996".toCharArray());
-        System.out.println("keyStoreKeyFactory: " + keyStoreKeyFactory.getKeyPair("secret"));
-        accessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair("secret"));
+                new KeyStoreKeyFactory(new ClassPathResource(secretProperties.getFile()), secretProperties.getPassword().toCharArray());
+        System.out.println("keyStoreKeyFactory: " + keyStoreKeyFactory.getKeyPair(secretProperties.getAlias()));
+        accessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair(secretProperties.getAlias()));
         return accessTokenConverter;
     }
 

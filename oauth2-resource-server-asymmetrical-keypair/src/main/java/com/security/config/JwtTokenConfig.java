@@ -1,6 +1,8 @@
 package com.security.config;
 
+import com.security.properties.SecretProperties;
 import io.micrometer.core.instrument.util.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +18,9 @@ import java.io.IOException;
 @Configuration
 public class JwtTokenConfig {
 
+    @Autowired
+    private SecretProperties secretProperties;
+
     @Bean(name="jwtTokenStore")
     public TokenStore tokenStore(){
         return new JwtTokenStore(jwtAccessTokenConverter());
@@ -25,7 +30,7 @@ public class JwtTokenConfig {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter(){
         JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
-        Resource resource = new ClassPathResource("public.txt");
+        Resource resource = new ClassPathResource(secretProperties.getFile());
         String publicKey = null;
         try {
             publicKey = IOUtils.toString(resource.getInputStream());

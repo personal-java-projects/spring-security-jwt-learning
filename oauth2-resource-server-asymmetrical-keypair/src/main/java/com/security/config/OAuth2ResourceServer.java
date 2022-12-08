@@ -36,17 +36,20 @@ public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
     @Autowired
     private ExtendAccessDeniedHandler extendAccessDeniedHandler;
 
+    @Autowired
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
 
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("用于签名解签名的secret密钥");
-        return converter;
-    }
+
+//    @Bean
+//    public JwtAccessTokenConverter accessTokenConverter() {
+//        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+//        converter.setSigningKey("用于签名解签名的secret密钥");
+//        return converter;
+//    }
 
     @Bean
     public TokenStore tokenStore() {
-        return new JwtTokenStore(accessTokenConverter());
+        return new JwtTokenStore(jwtAccessTokenConverter);
     }
 
     @Bean

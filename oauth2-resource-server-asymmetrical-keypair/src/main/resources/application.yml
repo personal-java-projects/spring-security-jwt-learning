@@ -2,6 +2,8 @@ server:
   port: 8002
 
 spring:
+  main:
+    allow-circular-references: true
   redis:
     database: 0 # Redis 数据库索引（默认为 0）
     host: localhost # Redis 服务器地址
@@ -20,4 +22,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 logging:
   level:
-    root: debug
+    root: info
+
+# 非对称加密 公钥
+secret:
+  # 公钥文件
+  file: public.txt

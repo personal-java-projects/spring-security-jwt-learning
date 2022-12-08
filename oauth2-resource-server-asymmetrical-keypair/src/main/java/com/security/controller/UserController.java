@@ -19,7 +19,6 @@ public class UserController {
     @Resource
     private TokenStore tokenStore;
 
-    @PreAuthorize("@pms.hasPermission(request, authentication)")
     @PostMapping(value = "/getUserInfo")
     public Map<String, Object> hello(OAuth2Authentication authentication) {
         Map<String, Object> map = getExtraInfo(authentication);

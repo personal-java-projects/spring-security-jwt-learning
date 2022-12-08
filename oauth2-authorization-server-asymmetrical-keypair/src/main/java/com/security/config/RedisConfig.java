@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.security.granter.SmsAuthenticationToken;
 import com.security.properties.RedisProperties;
+import com.security.serializer.SmsAuthenticationTokenMixin;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -99,6 +101,9 @@ public class RedisConfig extends CachingConfigurerSupport {
 
         // 解决SecurityUser中没有Set方法导致的序列化失败的错误
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        // 手动反序列化SmsAuthenticationToken
+        objectMapper.addMixIn(SmsAuthenticationToken.class, SmsAuthenticationTokenMixin.class);
 
         /**
          * 解决如下问题：

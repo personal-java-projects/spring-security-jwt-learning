@@ -24,14 +24,14 @@ public class GlobalExceptionHandler {
 
     /**
      * 处理自定义的业务异常
-     * @param req
+     * @param request
      * @param e
      * @return
      */
     @ExceptionHandler(value = BizException.class)
     @ResponseBody
-    public ResponseResult bizExceptionHandler(HttpServletRequest req, HttpServletResponse response, BizException e){
-        logger.error("发生业务异常！原因是：", e.getLocalizedMessage());
+    public ResponseResult bizExceptionHandler(HttpServletRequest request, HttpServletResponse response, BizException e){
+        logger.error("发生业务异常！原因是：" + e.getLocalizedMessage());
 
         response.setStatus(e.getErrorCode());
 
@@ -40,14 +40,14 @@ public class GlobalExceptionHandler {
 
     /**
      * 处理空指针的异常
-     * @param req
+     * @param request
      * @param e
      * @return
      */
     @ExceptionHandler(value = NullPointerException.class)
     @ResponseBody
-    public ResponseResult exceptionHandler(HttpServletRequest req, HttpServletResponse response, NullPointerException e){
-        logger.error("发生空指针异常！原因是: ", e.getLocalizedMessage());
+    public ResponseResult exceptionHandler(HttpServletRequest request, HttpServletResponse response, NullPointerException e){
+        logger.error("发生空指针异常！原因是: " + e.getLocalizedMessage());
 
         response.setStatus(CodeEnum.BODY_NOT_MATCH.getCode());
 
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseBody
     public ResponseResult requestInvalid(HttpServletRequest request, HttpServletResponse response, HttpMessageNotReadableException e) {
-        logger.error("参数请求错误！原因是: ", e.getLocalizedMessage());
+        logger.error("参数请求错误！原因是: " + e.getLocalizedMessage());
 
         response.setStatus(CodeEnum.BODY_NOT_MATCH.getCode());
 
@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public ResponseResult exceptionHandler(HttpServletRequest req, HttpServletResponse response, Exception e){
-        logger.error("未知异常！原因是: ", e.getLocalizedMessage());
+        logger.error("未知异常！原因是: " + e.getLocalizedMessage());
 
         response.setStatus(CodeEnum.INTERNAL_SERVER_ERROR.getCode());
 

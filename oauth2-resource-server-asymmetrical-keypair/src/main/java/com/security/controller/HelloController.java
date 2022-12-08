@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
@@ -20,7 +21,7 @@ public class HelloController {
 
     @PreAuthorize("@pms.hasPermission(#request, #authentication)")
     @RequestMapping("/hello")
-    public Map<String, Object> hello(OAuth2Authentication authentication) {
+    public Map<String, Object> hello(HttpServletRequest request,OAuth2Authentication authentication) {
         Map<String, Object> map = getExtraInfo(authentication);
         return map;
     }
