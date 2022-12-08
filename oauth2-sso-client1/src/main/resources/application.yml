@@ -3,7 +3,7 @@ server:
   servlet:
     session:
       cookie:
-        name: client1
+        name: client
 
 spring:
   main:
@@ -69,3 +69,28 @@ redis:
     timeout: 5000
     # 在关闭客户端连接之前等待任务处理完成的最长时间，在这之后，无论任务是否执行完成，都会被执行器关闭，默认100ms
     shutdown-timeout: 100
+
+# oauth2 配置
+oauth2:
+  client:
+    client-id: client4
+    client-secret: 123456
+    user-authorization-uri: http://localhost:8001/author/oauth/authorize
+    access-token-uri: http://localhost:8001/author/oauth/token
+    scope: profile,message.read
+    use-current-uri: false
+    pre-established-redirect-uri: http://localhost:1112/login
+  resource:
+    user-info-uri: http://localhost:8002/api/hello
+    jwt:
+      key-uri: http://localhost:8001/author/oauth/token_key
+      key-value:
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq5riHlWbojWBwK7zhF5r
+        7zTLOgw7EVXoSR7mBMozlvddlGdK/e0lMzVdLqAAPVDiR9zGOFMvgbLRIzAmRxe+
+        jKeOw5ER3ldIELujZaGR86xxznn4iOTC7jAqiYviBEDcNYBbFNFhC90aL/NoI/JJ
+        Fb/ngLWiRqR4lqXdNJ/1YJlHgG44XVS4zmEahPzsRv/bChgYCrrrtglcRqEQODhI
+        PzKTvcnPe3Z+/czO4Gxfhkh4Ef84XTrOegAh+fskx896ucQ/fVGSsTY1j20KPGWX
+        KL+mYilAOxUVRxrlPiEkMKoyaD8sZX4tY1y/nnPDXo+zrd3gtBCoMMYTNlqzwmrl
+        SQIDAQAB
+        -----END PUBLIC KEY-----

@@ -1,15 +1,25 @@
 package com.security.config;
 
+import com.security.properties.Oauth2Properties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
+import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
+import org.springframework.security.oauth2.client.test.OAuth2ContextConfiguration;
 import org.springframework.security.oauth2.client.token.AccessTokenProviderChain;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -30,6 +40,9 @@ import java.util.Arrays;
 @Configuration
 @EnableOAuth2Client
 public class OAuth2ClientConfig {
+
+    @Autowired
+    private Oauth2Properties oauth2Properties;
 
     @Bean
     public OAuth2RestTemplate oauth2RestTemplate(OAuth2ClientContext context, OAuth2ProtectedResourceDetails details) {
@@ -90,17 +103,27 @@ public class OAuth2ClientConfig {
         return tokenService;
     }
 
-    //	/**
-//	 * @功能描述: 授权客户端详情
-//	 * @版权信息：  www.easystudy.com
-//	 * @编写作者：  lixx2048@163.com
-//	 * @开发日期：  2020年8月1日
-//	 * @备注信息：
-//	 */
+    /**
+	 * @功能描述: 授权客户端详情
+	 * @版权信息：  www.easystudy.com
+	 * @编写作者：  lixx2048@163.com
+	 * @开发日期：  2020年8月1日
+	 * @备注信息：
+	 */
 //    @Bean
-//    @ConfigurationProperties("security.oauth2.client")
-//    public AuthorizationCodeResourceDetails google() {
-//    	return new AuthorizationCodeResourceDetails();
+////    @ConfigurationProperties("security.oauth2.client")
+//    public AuthorizationCodeResourceDetails clientCredentialsResourceDetails() {
+////    	return new AuthorizationCodeResourceDetails();
+//        AuthorizationCodeResourceDetails authorizationCodeResourceDetails = new AuthorizationCodeResourceDetails();
+//        authorizationCodeResourceDetails.setClientId(oauth2Properties.getClientId());
+//        authorizationCodeResourceDetails.setClientSecret(oauth2Properties.getClientSecret());
+//        authorizationCodeResourceDetails.setUserAuthorizationUri(oauth2Properties.getUserAuthorizationUri());
+//        authorizationCodeResourceDetails.setAccessTokenUri(oauth2Properties.getAccessTokenUri());
+//        authorizationCodeResourceDetails.setScope(oauth2Properties.getScopes());
+//        authorizationCodeResourceDetails.setUseCurrentUri(oauth2Properties.isUseCurrentUri());
+//        authorizationCodeResourceDetails.setPreEstablishedRedirectUri(oauth2Properties.getPreEstablishedRedirectUri());
+//
+//        return authorizationCodeResourceDetails;
 //    }
 //
 //    /**
@@ -111,8 +134,17 @@ public class OAuth2ClientConfig {
 //     * @备注信息：
 //     */
 //    @Bean
-//    @ConfigurationProperties("security.oauth2.resource")
-//    public ResourceServerProperties googleResource() {
-//    	return new ResourceServerProperties();
+////    @ConfigurationProperties("security.oauth2.resource")
+//    public ResourceServerProperties resourceServerProperties() {
+//        ResourceServerProperties resourceServerProperties = new ResourceServerProperties();
+//        ResourceServerProperties.Jwt jwt = resourceServerProperties.getJwt();
+//
+//        resourceServerProperties.setUserInfoUri(oauth2Properties.getUserInfoUri());
+//        jwt.setKeyUri(oauth2Properties.getKeyUri());
+////        jwt.setKeyValue(oauth2Properties.getKeyValue());
+//
+////        resourceServerProperties.setJwt();
+////        return new ResourceServerProperties();
+//        return resourceServerProperties;
 //    }
 }
