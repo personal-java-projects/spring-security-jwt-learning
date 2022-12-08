@@ -1,6 +1,8 @@
 package com.security.granter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.security.utils.ResponseResult;
+import com.security.utils.ResponseUtils;
 import com.security.utils.TokenServiceUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -80,8 +82,9 @@ public class SmsSuccessHandler implements AuthenticationSuccessHandler {
         OAuth2AccessToken accessToken = tokenServiceUtils.getTokenService(clientDetailsService).createAccessToken(oAuth2Authentication);
 
         // 直接结束
-        response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(objectMapper.writeValueAsString(accessToken));
+        ResponseUtils.result(response, ResponseResult.builder().ok(accessToken).build());
+//        response.setContentType("application/json;charset=utf-8");
+//        response.getWriter().write(objectMapper.writeValueAsString(accessToken));
     }
 
 

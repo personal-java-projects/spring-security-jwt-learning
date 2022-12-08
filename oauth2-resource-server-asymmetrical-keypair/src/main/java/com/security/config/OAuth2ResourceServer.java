@@ -2,6 +2,7 @@ package com.security.config;
 
 import com.security.handler.ExtendAccessDeniedHandler;
 import com.security.handler.ExtendAuthenticationEntryPointHandler;
+import com.security.utils.TokenServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,9 +28,6 @@ import javax.annotation.Resource;
 @EnableResourceServer
 public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
 
-    @Resource
-    private RedisConnectionFactory connectionFactory;
-
     @Autowired
     private ExtendAuthenticationEntryPointHandler extendAuthenticationEntryPointHandler;
 
@@ -37,32 +35,11 @@ public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
     private ExtendAccessDeniedHandler extendAccessDeniedHandler;
 
     @Autowired
-    private JwtAccessTokenConverter jwtAccessTokenConverter;
-
-
-//    @Bean
-//    public JwtAccessTokenConverter accessTokenConverter() {
-//        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-//        converter.setSigningKey("用于签名解签名的secret密钥");
-//        return converter;
-//    }
-
-    @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(jwtAccessTokenConverter);
-    }
-
-    @Bean
-    @Primary
-    public DefaultTokenServices tokenServices() {
-        DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-        defaultTokenServices.setTokenStore(tokenStore());
-        return defaultTokenServices;
-    }
+    private TokenServiceUtils tokenServiceUtils;
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
-        resources.tokenServices(tokenServices());
+        resources.tokenServices(tokenServiceUtils.getTokenService());
 
         // token异常类重写
         resources.authenticationEntryPoint(extendAuthenticationEntryPointHandler);
