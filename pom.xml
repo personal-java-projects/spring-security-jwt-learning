@@ -33,7 +33,7 @@
         <module>oauth2-authorization-server-session-cluster</module>
         <module>oauth2-authorization-server-asymmetrical-keypair</module>
 		<module>oauth2-resource-server-asymmetrical-keypair</module>
-	</modules>
+    </modules>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

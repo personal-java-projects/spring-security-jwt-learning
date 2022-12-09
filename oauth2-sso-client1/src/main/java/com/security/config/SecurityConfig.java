@@ -72,13 +72,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .authenticationEntryPoint(customLoginUrlAuthenticationEntryPoint());
 
+        // 单点登录客户端不需要配置session并发管理
         // session并发管理
-        http
-                .sessionManagement()
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(true)
-                // 将内存管理修改为redis管理
-                .sessionRegistry(sessionRegistry);
+//        http
+//                .sessionManagement()
+//                .maximumSessions(1)
+//                .maxSessionsPreventsLogin(true)
+//                // 将内存管理修改为redis管理
+//                .sessionRegistry(sessionRegistry);
     }
 
     /**
