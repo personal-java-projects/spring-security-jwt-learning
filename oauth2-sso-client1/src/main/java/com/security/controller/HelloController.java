@@ -56,7 +56,11 @@ public class HelloController {
         return sessionRepository.findById(Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue()));
     }
 
-
+    /**
+     * 返回数据中的details对象中的tokenValue，是访问对应资源服务接口的 bearer token
+     * @param authentication
+     * @return
+     */
     @RequestMapping("/getCurrentUser")
     public Object getCurrentUser(Authentication authentication){
         return authentication;

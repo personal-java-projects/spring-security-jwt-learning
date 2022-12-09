@@ -37,15 +37,40 @@ import java.util.Arrays;
  * @EnableOAuth2Sso 会自动走默认的 OAuth2ClientAuthenticationProcessingFilter
  * 下面的 OAuth2ClientAuthenticationProcessingFilter 不生效
  * 但 @EnableOAuth2Sso 目前我还没有解决登录成功后跳转到自定义的成功url
+ *
  */
 @Configuration
 @EnableOAuth2Client
 public class OAuth2ClientConfig {
 
+    /**
+     * @Feild: 单点登录授权成功前往的地址
+     */
+    private final String SUCCESS_FORWARD_URL = "/toSuccess";
+
+    /**
+     * @Feild: 单点登录授权失败前往的地址
+     */
+    private final String FAIL_FORWARD_URL = "/toFail";
+
     @Autowired
     private Oauth2Properties oauth2Properties;
 
-    OAuth2ProtectedResourceDetails oAuth2ProtectedResourceDetails;
+    /**
+     * 设置 OAuth2ClientAuthenticationProcessingFilter 的优先级
+     *
+     * 解决 org.springframework.security.oauth2.client.resource.UserRedirectRequiredException: A redirect is required to get the users approval
+     *
+     * @param filter
+     * @return
+     */
+    @Bean
+    public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
+        FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(filter);
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
+        return registration;
+    }
 
     @Bean
     public OAuth2RestTemplate oauth2RestTemplate(OAuth2ClientContext context, OAuth2ProtectedResourceDetails details) {
@@ -78,34 +103,19 @@ public class OAuth2ClientConfig {
         //设置回调成功的页面
         filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler() {
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                this.setDefaultTargetUrl("/toSuccess");
+                this.setDefaultTargetUrl(SUCCESS_FORWARD_URL);
                 super.onAuthenticationSuccess(request, response, authentication);
             }
         });
         filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler() {
             @Override
             public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                this.setDefaultFailureUrl("/toFail");
+                this.setDefaultFailureUrl(FAIL_FORWARD_URL);
                 super.onAuthenticationFailure(request, response, exception);
             }
         });
-        return filter;
-    }
 
-    /**
-     * 设置 OAuth2ClientAuthenticationProcessingFilter 的优先级
-     *
-     * 解决 org.springframework.security.oauth2.client.resource.UserRedirectRequiredException: A redirect is required to get the users approval
-     *
-     * @param filter
-     * @return
-     */
-    @Bean
-    public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-        FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(filter);
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
-        return registration;
+        return filter;
     }
 
     /**
@@ -116,9 +126,10 @@ public class OAuth2ClientConfig {
     @Bean
     public RemoteTokenServices tokenService(OAuth2ProtectedResourceDetails details) {
         RemoteTokenServices tokenService = new RemoteTokenServices();
-        tokenService.setCheckTokenEndpointUrl("http://localhost:8001/author/oauth/check_token");
+        tokenService.setCheckTokenEndpointUrl(oauth2Properties.getCheckTokenUri());
         tokenService.setClientId(details.getClientId());
         tokenService.setClientSecret(details.getClientSecret());
+
         return tokenService;
     }
 
@@ -150,11 +161,13 @@ public class OAuth2ClientConfig {
      * @版权信息：  www.easystudy.com
      * @编写作者：  lixx2048@163.com
      * @开发日期：  2020年8月1日
-     * @备注信息：
+     * @备注信息：当前项目，非对称加密，不配置，单点登录也没受到影响
      */
     @Bean
 //    @ConfigurationProperties("security.oauth2.resource")
     public ResourceServerProperties resourceServerProperties() {
+//        return new ResourceServerProperties();
+
         ResourceServerProperties resourceServerProperties = new ResourceServerProperties();
         ResourceServerProperties.Jwt jwt = resourceServerProperties.getJwt();
 
@@ -162,7 +175,6 @@ public class OAuth2ClientConfig {
         jwt.setKeyUri(oauth2Properties.getKeyUri());
         jwt.setKeyValue(oauth2Properties.getKeyValue());
 
-//        return new ResourceServerProperties();
         return resourceServerProperties;
     }
 }

@@ -25,6 +25,9 @@ public class Oauth2Properties {
     @Value("${oauth2.client.access-token-uri}")
     private String accessTokenUri;
 
+    @Value("${oauth2.client.check-token-uri}")
+    private String checkTokenUri;
+
     @Value("${oauth2.client.scope}")
     private List<String> scopes;
 

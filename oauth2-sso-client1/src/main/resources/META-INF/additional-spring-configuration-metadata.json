@@ -49,5 +49,10 @@
       "name": "oauth2.resource.jwt.key-value",
       "type": "java.lang.String",
       "description": "Description for oauth2.resource.jwt.key-value."
+    },
+    {
+      "name": "oauth2.client.check-token-uri",
+      "type": "java.lang.String",
+      "description": "Description for oauth2.client.check-token-uri."
     }
   ] }
