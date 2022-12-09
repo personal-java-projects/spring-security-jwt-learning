@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -43,6 +44,8 @@ public class OAuth2ClientConfig {
 
     @Autowired
     private Oauth2Properties oauth2Properties;
+
+    OAuth2ProtectedResourceDetails oAuth2ProtectedResourceDetails;
 
     @Bean
     public OAuth2RestTemplate oauth2RestTemplate(OAuth2ClientContext context, OAuth2ProtectedResourceDetails details) {
@@ -90,6 +93,22 @@ public class OAuth2ClientConfig {
     }
 
     /**
+     * 设置 OAuth2ClientAuthenticationProcessingFilter 的优先级
+     *
+     * 解决 org.springframework.security.oauth2.client.resource.UserRedirectRequiredException: A redirect is required to get the users approval
+     *
+     * @param filter
+     * @return
+     */
+    @Bean
+    public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
+        FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(filter);
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
+        return registration;
+    }
+
+    /**
      * 注册check token服务
      * @param details
      * @return
@@ -110,41 +129,40 @@ public class OAuth2ClientConfig {
 	 * @开发日期：  2020年8月1日
 	 * @备注信息：
 	 */
-//    @Bean
-////    @ConfigurationProperties("security.oauth2.client")
-//    public AuthorizationCodeResourceDetails clientCredentialsResourceDetails() {
-////    	return new AuthorizationCodeResourceDetails();
-//        AuthorizationCodeResourceDetails authorizationCodeResourceDetails = new AuthorizationCodeResourceDetails();
-//        authorizationCodeResourceDetails.setClientId(oauth2Properties.getClientId());
-//        authorizationCodeResourceDetails.setClientSecret(oauth2Properties.getClientSecret());
-//        authorizationCodeResourceDetails.setUserAuthorizationUri(oauth2Properties.getUserAuthorizationUri());
-//        authorizationCodeResourceDetails.setAccessTokenUri(oauth2Properties.getAccessTokenUri());
-//        authorizationCodeResourceDetails.setScope(oauth2Properties.getScopes());
-//        authorizationCodeResourceDetails.setUseCurrentUri(oauth2Properties.isUseCurrentUri());
-//        authorizationCodeResourceDetails.setPreEstablishedRedirectUri(oauth2Properties.getPreEstablishedRedirectUri());
-//
-//        return authorizationCodeResourceDetails;
-//    }
-//
-//    /**
-//     * @功能描述: 授权资源服务配置
-//     * @版权信息：  www.easystudy.com
-//     * @编写作者：  lixx2048@163.com
-//     * @开发日期：  2020年8月1日
-//     * @备注信息：
-//     */
-//    @Bean
-////    @ConfigurationProperties("security.oauth2.resource")
-//    public ResourceServerProperties resourceServerProperties() {
-//        ResourceServerProperties resourceServerProperties = new ResourceServerProperties();
-//        ResourceServerProperties.Jwt jwt = resourceServerProperties.getJwt();
-//
-//        resourceServerProperties.setUserInfoUri(oauth2Properties.getUserInfoUri());
-//        jwt.setKeyUri(oauth2Properties.getKeyUri());
-////        jwt.setKeyValue(oauth2Properties.getKeyValue());
-//
-////        resourceServerProperties.setJwt();
-////        return new ResourceServerProperties();
-//        return resourceServerProperties;
-//    }
+    @Bean
+//    @ConfigurationProperties("security.oauth2.client")
+    public AuthorizationCodeResourceDetails authorizationCodeResourceDetails() {
+//    	return new AuthorizationCodeResourceDetails();
+        AuthorizationCodeResourceDetails authorizationCodeResourceDetails = new AuthorizationCodeResourceDetails();
+        authorizationCodeResourceDetails.setClientId(oauth2Properties.getClientId());
+        authorizationCodeResourceDetails.setClientSecret(oauth2Properties.getClientSecret());
+        authorizationCodeResourceDetails.setUserAuthorizationUri(oauth2Properties.getUserAuthorizationUri());
+        authorizationCodeResourceDetails.setAccessTokenUri(oauth2Properties.getAccessTokenUri());
+        authorizationCodeResourceDetails.setScope(oauth2Properties.getScopes());
+        authorizationCodeResourceDetails.setUseCurrentUri(oauth2Properties.isUseCurrentUri());
+        authorizationCodeResourceDetails.setPreEstablishedRedirectUri(oauth2Properties.getPreEstablishedRedirectUri());
+
+        return authorizationCodeResourceDetails;
+    }
+
+    /**
+     * @功能描述: 授权资源服务配置
+     * @版权信息：  www.easystudy.com
+     * @编写作者：  lixx2048@163.com
+     * @开发日期：  2020年8月1日
+     * @备注信息：
+     */
+    @Bean
+//    @ConfigurationProperties("security.oauth2.resource")
+    public ResourceServerProperties resourceServerProperties() {
+        ResourceServerProperties resourceServerProperties = new ResourceServerProperties();
+        ResourceServerProperties.Jwt jwt = resourceServerProperties.getJwt();
+
+        resourceServerProperties.setUserInfoUri(oauth2Properties.getUserInfoUri());
+        jwt.setKeyUri(oauth2Properties.getKeyUri());
+        jwt.setKeyValue(oauth2Properties.getKeyValue());
+
+//        return new ResourceServerProperties();
+        return resourceServerProperties;
+    }
 }

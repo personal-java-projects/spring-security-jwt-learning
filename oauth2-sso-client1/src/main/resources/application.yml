@@ -16,24 +16,24 @@ spring:
     password: root
 
 # 配置单点登录相关信息
-security:
-  oauth2:
-    client:
-      client-secret: 123456
-      client-id: client4
-      user-authorization-uri: http://localhost:8001/author/oauth/authorize
-      access-token-uri: http://localhost:8001/author/oauth/token
-      scope: profile,message.read
-      # 支持此处配置重定向地址，为true时，pre-established-redirect-uri不生效
-      use-current-uri: false
-#      # 这里必须要回到客户端的登录地址，否则客户端无法校验是否登录成功，导致客户端实际并没有登录成功
-      pre-established-redirect-uri: http://localhost:1112/login
+#security:
+#  oauth2:
+#    client:
+#      client-secret: 123456
+#      client-id: client4
+#      user-authorization-uri: http://localhost:8001/author/oauth/authorize
+#      access-token-uri: http://localhost:8001/author/oauth/token
+#      scope: profile,message.read
+#      # 支持此处配置重定向地址，为true时，pre-established-redirect-uri不生效
+#      use-current-uri: false
+##      # 这里必须要回到客户端的登录地址，否则客户端无法校验是否登录成功，导致客户端实际并没有登录成功
+#      pre-established-redirect-uri: http://localhost:1112/login
 #      registered-redirect-uri:
-    resource:
-      user-info-uri: http://localhost:8002/api/hello
-      jwt:
-        key-uri: http://localhost:8001/author/oauth/token_key
-        key-value: test-secret
+#    resource:
+#      user-info-uri: http://localhost:8002/api/hello
+#      jwt:
+#        key-uri: http://localhost:8001/author/oauth/token_key
+#        key-value: test-secret
 
 mybatis:
   # mapper ??
@@ -79,6 +79,7 @@ oauth2:
     access-token-uri: http://localhost:8001/author/oauth/token
     scope: profile,message.read
     use-current-uri: false
+
     pre-established-redirect-uri: http://localhost:1112/login
   resource:
     user-info-uri: http://localhost:8002/api/hello
