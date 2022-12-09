@@ -64,7 +64,7 @@ public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
 //                .anyRequest().authenticated();
 
         http.antMatcher("/user/**").authorizeRequests()
-                .antMatchers("/user/getUserInfo").access("#oauth2.hasAnyScope('user_base', 'user_userInfo')");
+                .antMatchers("/user/getUserInfo").access("#oauth2.hasAnyScope('user_base', 'user_userInfo', 'profile')");
 
         // oauth2 授权后即可访问
         http.antMatcher("/**")
