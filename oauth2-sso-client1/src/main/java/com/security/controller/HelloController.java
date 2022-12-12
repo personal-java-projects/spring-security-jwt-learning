@@ -4,6 +4,7 @@ import cn.hutool.http.Method;
 import com.security.properties.RedisProperties;
 import com.security.utils.Base64Util;
 import com.security.utils.CookiesUtils;
+import com.security.utils.ResponseResult;
 import com.security.utils.RestTemplateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +68,13 @@ public class HelloController {
     }
 
     @RequestMapping("/toLogin")
-    public void login(HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://localhost:8080/callback?state=sso");
+    public ResponseResult login(Authentication authentication) {
+        Map<String, Object> resultMap = new HashMap<>();
+        Object details = authentication.getDetails();
+
+        resultMap.put("details", details);
+
+        return ResponseResult.builder().success(resultMap);
     }
 
     /**
