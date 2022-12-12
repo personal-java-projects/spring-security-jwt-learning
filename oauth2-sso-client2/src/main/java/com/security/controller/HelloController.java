@@ -81,12 +81,12 @@ public class HelloController {
      */
     @RequestMapping("/toSuccess")
     public void success(HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://localhost:8080/callback?state=ssoSuccess");
+        response.sendRedirect("http://localhost:8081/callback?state=ssoSuccess");
     }
 
     @RequestMapping("/toFail")
     public void fail(HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://localhost:8080/callback?state=ssoFail");
+        response.sendRedirect("http://localhost:8081/callback?state=ssoFail");
     }
 
     @GetMapping("/api/logout")

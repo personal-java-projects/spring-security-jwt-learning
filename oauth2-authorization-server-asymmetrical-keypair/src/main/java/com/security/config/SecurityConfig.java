@@ -50,6 +50,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .csrf().disable()
+                .headers().frameOptions().disable()
+                .and()
                 .apply(smsAuthenticationSecurityConfig)
                 .and()
                 .formLogin()

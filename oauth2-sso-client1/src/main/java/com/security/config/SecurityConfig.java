@@ -57,7 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 跨域配置
                 .cors()
                 .and()
-                .csrf().disable()
+                .csrf().disable().headers().frameOptions().disable()
+                .and()
                 .authorizeRequests()
                 // 放行option
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
