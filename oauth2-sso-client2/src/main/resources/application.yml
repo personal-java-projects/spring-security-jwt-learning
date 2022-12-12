@@ -73,14 +73,14 @@ redis:
 # oauth2 配置
 oauth2:
   client:
-    client-id: client4
+    client-id: client5
     client-secret: 123456
     user-authorization-uri: http://localhost:8001/author/oauth/authorize
     access-token-uri: http://localhost:8001/author/oauth/token
     check-token-uri: http://localhost:8001/author/oauth/check_token
     scope: profile,message.read
     use-current-uri: false
-    pre-established-redirect-uri: http://localhost:1112/login
+    pre-established-redirect-uri: http://localhost:1113/login
   resource:
     user-info-uri: http://localhost:8002/api/hello
     jwt:
