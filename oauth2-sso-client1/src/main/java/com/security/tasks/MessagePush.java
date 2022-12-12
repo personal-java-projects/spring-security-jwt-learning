@@ -17,15 +17,19 @@ public class MessagePush {
 
 
     @Scheduled(cron = "0/5 * * * * ?")
-    public void start() {
+    public void startAll() {
 //        RequestMsg requestMsg = new RequestMsg();
 //        requestMsg.setBody(LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")));
 //        String jsonString = JSONObject.toJSONString(requestMsg);
 //        simpMessagingTemplate.convertAndSend("/topic/all", "推送定时消息");
+        log.info("定时发布 广播消息");
         simpMessagingTemplate.convertAndSend("/topic/all","今天10点开项目启动会-所有人");
-        log.info("定时发布");
+    }
+
+    @Scheduled(cron = "0/12 * * * * ?")
+    public void startUser() {
+        log.info("定时发布 点对点消息");
         // 点对点定时，不生效
         simpMessagingTemplate.convertAndSendToUser("123456", "/cmdFinish", "xxx今天去开会");
-//        simpMessagingTemplate.convertAndSendToUser("111111","/cmdFinish","今天10点开项目启动会-linxin");
     }
 }
