@@ -10,6 +10,8 @@ import org.springframework.session.Session;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
+import java.util.List;
+
 @Slf4j
 @Configuration
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = SessionConstants.defaultSessionTimeout, redisNamespace = "spring:client")

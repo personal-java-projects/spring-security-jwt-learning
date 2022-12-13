@@ -1,5 +1,7 @@
 package com.security.config;
 
+import com.security.handler.CustomAuthenticationFailureHandler;
+import com.security.handler.CustomSessionAuthenticationStrategy;
 import com.security.properties.Oauth2Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
@@ -23,6 +25,7 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
@@ -55,6 +58,12 @@ public class OAuth2ClientConfig {
 
     @Autowired
     private Oauth2Properties oauth2Properties;
+
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    @Autowired
+    private CustomSessionAuthenticationStrategy customSessionAuthenticationStrategy;
 
     /**
      * 设置 OAuth2ClientAuthenticationProcessingFilter 的优先级
@@ -99,6 +108,8 @@ public class OAuth2ClientConfig {
         filter.setRestTemplate(oauth2RestTemplate);
         filter.setTokenServices(tokenService);
 
+        filter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+        filter.setSessionAuthenticationStrategy(customSessionAuthenticationStrategy);
 
         //设置回调成功的页面
         filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler() {

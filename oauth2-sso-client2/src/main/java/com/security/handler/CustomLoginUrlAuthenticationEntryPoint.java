@@ -1,21 +1,27 @@
 package com.security.handler;
 
 import com.security.enums.CodeEnum;
+import com.security.properties.RedisProperties;
+import com.security.redis.SessionRepository;
+import com.security.utils.CookiesUtils;
 import com.security.utils.ResponseResult;
 import com.security.utils.ResponseUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.log.LogMessage;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.RedirectUrlBuilder;
 import org.springframework.security.web.util.UrlUtils;
+import org.springframework.session.Session;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -35,6 +41,12 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
     private boolean useForward = false;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private final String XMLHttpRequest = "XMLHttpRequest";
+
+    @Autowired
+    private SessionRepository sessionRepository;
+
+    @Autowired
+    private RedisProperties redisProperties;
 
     public CustomLoginUrlAuthenticationEntryPoint(String loginFormUrl) {
         super(loginFormUrl);
@@ -60,6 +72,18 @@ public class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticati
         // 单点登录请求校验的返回数据
         if (XMLHttpRequest.equals(requestedWith)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+            Map<String, Cookie> cookies = CookiesUtils.getCookies(request);
+            Cookie cookie = cookies.get(redisProperties.getCookieName());
+            if (cookie != null) {
+                Session session = sessionRepository.getSessionById(cookie.getValue());
+
+                // 单点登录，当redis中已存在对应客户端session时，删掉
+                // 解决某一客户端未授权，导致其它客户端无法进行授权登录
+                if (session != null) {
+                    sessionRepository.deleteSessionById(session.getId());
+                }
+            }
 
             redirectUrl = this.buildRedirectUrlToLoginPage(request, response, authException);
             Map<String, Object> resultMap = new HashMap<>();
