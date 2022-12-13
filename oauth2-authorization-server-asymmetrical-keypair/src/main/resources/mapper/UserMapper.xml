@@ -8,7 +8,7 @@
         <selectKey keyProperty="id" resultType="integer" order="AFTER">
             select LAST_INSERT_ID()
         </selectKey>
-        insert into sys_user values (#{id}, #{username}, #{password})
+        insert into sys_user values (#{id}, #{username}, #{password}, #{phone})
     </insert>
 
     <insert id="insertRoleUser">

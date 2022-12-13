@@ -13,6 +13,8 @@ public class LoginRegisterForm {
 
     private String password;
 
+    private String phone;
+
     private Integer roleId;
 
     private String checkCode;
@@ -23,6 +25,7 @@ public class LoginRegisterForm {
         User user = new User();
         user.setUsername(form.getUsername());
         user.setPassword(passwordEncoder.encode(form.getPassword()));
+        user.setPhone(form.getPhone());
 
         return user;
     }
