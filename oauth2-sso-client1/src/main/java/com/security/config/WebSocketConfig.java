@@ -21,6 +21,8 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
         registry.enableSimpleBroker("/topic", "/queue");
         // 点对点发送前缀
         registry.setUserDestinationPrefix("/queue");
+        //设置消息发布订阅的头(客户端发送数据给服务器的一个前缀)
+        registry.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
