@@ -2,6 +2,7 @@ package com.security.config;
 
 import com.security.filter.ValidateCodeFilter;
 import com.security.granter.SmsAuthenticationSecurityConfig;
+import com.security.handler.CustomAuthenticationFailureHandler;
 import com.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private SmsAuthenticationSecurityConfig smsAuthenticationSecurityConfig;
 
+    @Resource
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService)
@@ -57,8 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/base-login.html") //自定义的登录页面 **重要**
                 .loginProcessingUrl("/login")
-                // 用户通过security登录失败前往的页面
-                .failureForwardUrl("/auth/loginFail")
+                // 用户通过security登录失败的处理
+                .failureHandler(customAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests()
                 // 放行预请求
@@ -71,7 +75,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .sessionManagement()
                 .maximumSessions(1)
-                .maxSessionsPreventsLogin(true)
+                // 当达到一个用户的允许的最大会话数量时，是否允许进行登录。为true，不允许；为false，会挤掉之前的登录进行登录
+                // 我这里改为允许挤掉直接登录
+                .maxSessionsPreventsLogin(false)
                 // 将内存管理修改为redis管理
                 .sessionRegistry(sessionRegistry);
 

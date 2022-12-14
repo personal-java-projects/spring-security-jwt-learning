@@ -37,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -124,9 +126,9 @@ public class GrantController {
     }
 
     @RequestMapping("/loginFail")
-    public ModelAndView loginFail(ModelAndView modelAndView) {
+    public ModelAndView loginFail(ModelAndView modelAndView, @RequestParam String message) {
         modelAndView.setViewName("/login-fail");
-        modelAndView.addObject("message", "用户名或密码错误");
+        modelAndView.addObject("message", URLDecoder.decode(message));
         return modelAndView;
     }
 

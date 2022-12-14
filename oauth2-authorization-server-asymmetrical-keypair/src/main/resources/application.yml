@@ -5,6 +5,12 @@ server:
     session:
       cookie:
         name: auth
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
 #        use-base64-encoding: false
 #        http-only: false
 #      # session有效时长 默认单位是秒  不配置默认半小时失效
