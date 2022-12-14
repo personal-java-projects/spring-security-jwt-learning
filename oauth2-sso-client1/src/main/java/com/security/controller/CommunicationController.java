@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/socket")
+@RequestMapping("/communication")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class WebsocketController {
+public class CommunicationController {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping("/sendMsg")
@@ -19,8 +19,9 @@ public class WebsocketController {
         simpMessagingTemplate.convertAndSend("/topic/all","今天10点开项目启动会-所有人");
         return ResponseResult.builder().success();
     }
-    @PostMapping("/sendOne")
-    public ResponseResult<String> sendOne(){
+
+    @PostMapping("/single")
+    public ResponseResult<String> single() {
         simpMessagingTemplate.convertAndSendToUser("111111","/queue/cmdFinish","今天10点开项目启动会-linxin");
         return ResponseResult.builder().success();
     }

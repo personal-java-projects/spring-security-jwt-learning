@@ -48,12 +48,12 @@ public class HelloController {
 
     @GetMapping("/getSession")
     public Object getSession(HttpServletRequest request) {
-//        sessionRepository.findById();
         Map<String, Cookie> cookies = CookiesUtils.getCookies(request);
         log.debug("cookies: " + cookies);
         log.debug("cookie: " + cookies.get(redisProperties.getCookieName()).getValue());
         log.debug("sessionId: " + Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue()));
         log.debug("session: " + sessionRepository.findById(Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue())).getMaxInactiveInterval().toMillis());
+
         return sessionRepository.findById(Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue()));
     }
 
@@ -97,17 +97,7 @@ public class HelloController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {//清除认证
             new SecurityContextLogoutHandler().logout(request, response, auth);
-            // 因为我使用的单点登录认证方式是默认的session方式。
-            // 这边删除客户端的cookie,客户端才算退出登录。如果需要认证服务器，只需要删除认证服务器的cookie
-//            CookiesUtils.set(response, "client1", null, 0);
         }
-
-        // 认证中心退出请求
-//        return "redirect:" + "http://localhost:8001/author/logout" + "?" + request.getQueryString();
-//        Map<String, String> urlParams = new HashMap<>();
-//        urlParams.put("cookieName", "client1");
-//
-//        String result = RestTemplateUtils.getResponse("http://localhost:8001/author/logout", HttpMethod.GET, urlParams, new HashMap<>());
 
         return ResponseEntity.ok("退出成功");
     }
