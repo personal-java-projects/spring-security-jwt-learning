@@ -4,16 +4,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.security.listener.SessionListener;
 import com.security.properties.RedisProperties;
-import com.security.serializer.OAuth2AuthenticationDetailsMixin;
 import com.security.serializer.OAuth2AuthenticationMixin;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -25,13 +21,8 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
-import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
-import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextListener;
-import org.springframework.web.filter.RequestContextFilter;
 
 import java.time.Duration;
 import java.time.temporal.Temporal;
@@ -91,9 +82,8 @@ public class RedisConfig {
         // 解决SecurityUser中没有Set方法导致的序列化失败的错误
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-//        objectMapper.addMixIn(OAuth2AuthenticationDetails.class, OAuth2AuthenticationDetailsMixin.class);
         // OAuth2Authentication必须手动实现反序列化
-//        objectMapper.addMixIn(OAuth2Authentication.class, OAuth2AuthenticationMixin.class);
+        objectMapper.addMixIn(OAuth2Authentication.class, OAuth2AuthenticationMixin.class);
 
         /**
          * 解决如下问题：
@@ -116,5 +106,15 @@ public class RedisConfig {
         redisTemplate.afterPropertiesSet();
 
         return redisTemplate;
+    }
+
+    @Bean
+    public RequestContextListener requestContextFilter() {
+        return new RequestContextListener();
+    }
+
+    @Bean
+    public RedisSerializer<?> springSessionDefaultRedisSerializer(RedisTemplate<?, ?> redisTemplate) {
+        return redisTemplate.getValueSerializer();
     }
 }
