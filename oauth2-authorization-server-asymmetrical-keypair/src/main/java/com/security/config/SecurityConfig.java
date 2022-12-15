@@ -3,6 +3,7 @@ package com.security.config;
 import com.security.filter.ValidateCodeFilter;
 import com.security.granter.SmsAuthenticationSecurityConfig;
 import com.security.handler.CustomAuthenticationFailureHandler;
+import com.security.handler.SessionInformationExpiredStrategyHandler;
 import com.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.web.cors.CorsUtils;
@@ -39,6 +41,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    @Resource
+    private SessionInformationExpiredStrategyHandler sessionInformationExpiredStrategyHandler;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -78,8 +83,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 当达到一个用户的允许的最大会话数量时，是否允许进行登录。为true，不允许；为false，会挤掉之前的登录进行登录
                 // 我这里改为允许挤掉直接登录
                 .maxSessionsPreventsLogin(false)
+//                .expiredSessionStrategy(sessionInformationExpiredStrategyHandler)
                 // 将内存管理修改为redis管理
-                .sessionRegistry(sessionRegistry);
+                .sessionRegistry(sessionRegistry)
+                .and()
+                /* 配置会话固定攻击的策略为migrateSession。这样会创建一个新的session，并将旧session里的内容复制进来。这样做会触发session销毁的监听器。 */
+                .sessionFixation().migrateSession();;
 
         // 添加验证码过滤器
         http

@@ -177,6 +177,17 @@ public class RedisConfig extends CachingConfigurerSupport {
         return redisTemplate.getValueSerializer();
     }
 
+    /**
+     * 过期的session信息仍然存储在SessionRegistry里，需要配置一个监听器，即HttpSessionEventPublisher，监听到session死亡时将其删除
+     * 监听session是否死亡，死亡则会发送事件通知
+     * @return
+     */
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+
+
 //    /**
 //     * 监听session
 //     */
