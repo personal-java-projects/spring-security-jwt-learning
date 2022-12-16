@@ -74,8 +74,7 @@ public class RedisConfig extends CachingConfigurerSupport {
                 .build();
 
         LettuceConnectionFactory factory = new LettuceConnectionFactory(redisStandaloneConfiguration, clientConfig);
-//        factory.setShareNativeConnection(true);
-//        factory.setValidateConnection(false);
+
         return factory;
     }
 
@@ -128,11 +127,6 @@ public class RedisConfig extends CachingConfigurerSupport {
         return redisTemplate;
     }
 
-//    @Bean
-//    public HttpSessionEventPublisher httpSessionEventPublisher() {
-//        return new HttpSessionEventPublisher();
-//    }
-
     /**
      * 必须在这里进行session进行redis的序列化配置
      *
@@ -140,40 +134,6 @@ public class RedisConfig extends CachingConfigurerSupport {
      */
     @Bean
     public RedisSerializer<?> springSessionDefaultRedisSerializer(RedisTemplate<?, ?> redisTemplate) {
-//        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-////        objectMapper.registerModule(new CoreJackson2Module());
-////        objectMapper.registerModule(new WebJackson2Module());
-////        objectMapper.registerModule(new WebServerJackson2Module());
-////        objectMapper.registerModule(new WebServletJackson2Module());
-////        objectMapper.registerModule(new OAuth2ClientJackson2Module());
-//
-//        // 构建一个基本的白名单
-//        BasicPolymorphicTypeValidator basicPolymorphicTypeValidator = BasicPolymorphicTypeValidator.builder()
-//                .allowIfSubType(Collection.class)
-//                .allowIfSubType(Number.class)
-//                .allowIfSubType(Map.class)
-//                .allowIfSubType(Temporal.class)
-//                .allowIfSubType(Object.class)
-//                .allowIfSubTypeIsArray()
-//                .build();
-//        objectMapper.activateDefaultTyping(basicPolymorphicTypeValidator, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-//
-//        // 解决SecurityUser中没有Set方法导致的序列化失败的错误
-//        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//
-//        /**
-//         * 解决如下问题：
-//         * org.springframework.data.redis.serializer.SerializationException:
-//         * Could not read JSON: Cannot construct instance of `org.springframework.security.web.savedrequest.DefaultSavedRequest`
-//         * (no Creators, like default constructor, exist): cannot deserialize from Object value (no delegate- or property-based Creator)
-//         */
-//        objectMapper.registerModules(SecurityJackson2Modules.getModules(getClass().getClassLoader()));
-//
-//        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
-//
-//        return jackson2JsonRedisSerializer;
         return redisTemplate.getValueSerializer();
     }
 
@@ -186,28 +146,4 @@ public class RedisConfig extends CachingConfigurerSupport {
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
     }
-
-
-//    /**
-//     * 监听session
-//     */
-//    @Bean
-//    public SessionListener redisSessionListener() {
-//        return new SessionListener();
-//    }
-
-    //    /**
-//     * 设置spring session redis 序列化方式
-//     * 这种序列化配置方式，返回值必须是RedisTemplate<Object, Object>
-//     * @param factory
-//     * @return
-//     */
-//    @Bean
-//    public SessionRepository sessionRepository(RedisConnectionFactory redisConnectionFactory) {
-//        RedisOperationsSessionRepository sessionRepository = new RedisOperationsSessionRepository(redisTemplate(redisConnectionFactory));
-//        FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
-//        sessionRepository.setDefaultSerializer(fastJsonRedisSerializer);
-//        sessionRepository.setDefaultMaxInactiveInterval(36000);
-//        return sessionRepository;
-//    }
 }

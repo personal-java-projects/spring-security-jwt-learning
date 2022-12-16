@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .apply(smsAuthenticationSecurityConfig)
                 .and()
                 .formLogin()
-                .loginPage("/base-login.html") //自定义的登录页面 **重要**
+                .loginPage("/auth/base-login") //自定义的登录页面 **重要**
                 .loginProcessingUrl("/login")
                 // 用户通过security登录失败的处理
                 .failureHandler(customAuthenticationFailureHandler)
@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 当达到一个用户的允许的最大会话数量时，是否允许进行登录。为true，不允许；为false，会挤掉之前的登录进行登录
                 // 我这里改为允许挤掉直接登录
                 .maxSessionsPreventsLogin(false)
-//                .expiredSessionStrategy(sessionInformationExpiredStrategyHandler)
+                .expiredSessionStrategy(sessionInformationExpiredStrategyHandler)
                 // 将内存管理修改为redis管理
                 .sessionRegistry(sessionRegistry)
                 .and()

@@ -3,13 +3,13 @@ package com.security.controller;
 import com.security.enums.CodeEnum;
 import com.security.model.ClientDetailForm;
 import com.security.model.LoginRegisterForm;
-import com.security.model.SecurityUser;
 import com.security.pojo.ClientDetail;
 import com.security.service.ClientService;
 import com.security.service.OauthService;
 import com.security.service.UserService;
 import com.security.utils.RedisUtil;
 import com.security.utils.ResponseResult;
+import com.sun.net.httpserver.Headers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -42,10 +43,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Slf4j
 @Controller
 @SessionAttributes("authorizationRequest")
 @RequestMapping("/auth")
-@Slf4j
 public class GrantController {
 
     @Autowired
@@ -125,10 +126,27 @@ public class GrantController {
         return ResponseResult.builder().code(CodeEnum.SUCCESS.getCode()).message(CodeEnum.SUCCESS.getMessage()).data(token).build();
     }
 
+    @RequestMapping("/base-login")
+    public ModelAndView baseLogin(ModelAndView modelAndView) {
+        modelAndView.setViewName("/base-login");
+
+        return modelAndView;
+    }
+
     @RequestMapping("/loginFail")
-    public ModelAndView loginFail(ModelAndView modelAndView, @RequestParam String message) {
+    public ModelAndView loginFail(ModelAndView modelAndView, @RequestParam(required = false) String message) {
         modelAndView.setViewName("/login-fail");
         modelAndView.addObject("message", URLDecoder.decode(message));
+        return modelAndView;
+    }
+
+    @RequestMapping("/invalidSession")
+    public ModelAndView invalidSession(ModelAndView modelAndView, @RequestParam String redirectUrl) {
+        System.out.println("headers: " + redirectUrl);
+
+        modelAndView.setViewName("/invalid-page");
+        modelAndView.addObject("redirectUrl", "/author/oauth/authorize?scope=profile message.read&response_type=code&redirect_uri=http://localhost:1112/login&state=k_0K_d&client_id=client4&");
+
         return modelAndView;
     }
 
