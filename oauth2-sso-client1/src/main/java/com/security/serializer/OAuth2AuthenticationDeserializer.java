@@ -42,7 +42,7 @@ public class OAuth2AuthenticationDeserializer extends JsonDeserializer<OAuth2Aut
         if (detailsNode != null && !detailsNode.isMissingNode()) {
             Map<String, Object> map = new HashMap<>();
             map.put("remoteAddress", detailsNode.get("remoteAddress").asText());
-            map.put("sessionId", detailsNode.get("sessionId").asText(null));
+            map.put("sessionId", detailsNode.get("sessionId").asText());
             map.put("tokenValue", detailsNode.get("tokenValue").asText());
             map.put("tokenType", detailsNode.get("tokenType").asText());
             map.put("decodedDetails", detailsNode.get("decodedDetails"));

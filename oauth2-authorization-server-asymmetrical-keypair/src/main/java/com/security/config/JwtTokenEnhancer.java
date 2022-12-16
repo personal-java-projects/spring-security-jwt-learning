@@ -15,8 +15,6 @@ public class JwtTokenEnhancer implements TokenEnhancer {
                                      OAuth2Authentication authentication) {
         Map<String, Object> info = new HashMap<>();
         info.put("blog", "https://www.zimug.com");//扩展信息
-        info.put("user", authentication);
-        System.out.println("authentication: " + authentication);
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
         return accessToken;
     }
