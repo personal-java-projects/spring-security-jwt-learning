@@ -127,25 +127,30 @@ public class GrantController {
     }
 
     @RequestMapping("/base-login")
-    public ModelAndView baseLogin(ModelAndView modelAndView) {
+    public ModelAndView baseLogin(ModelAndView modelAndView, @RequestParam(required = false) String redirectUrl) {
         modelAndView.setViewName("/base-login");
+        modelAndView.addObject("redirectUrl", redirectUrl);
 
         return modelAndView;
+    }
+
+    @PostMapping("/login")
+    public ResponseResult login(@RequestParam String username, @RequestParam String password) {
+        return ResponseResult.builder().ok().build();
     }
 
     @RequestMapping("/loginFail")
     public ModelAndView loginFail(ModelAndView modelAndView, @RequestParam(required = false) String message) {
         modelAndView.setViewName("/login-fail");
         modelAndView.addObject("message", URLDecoder.decode(message));
+
         return modelAndView;
     }
 
     @RequestMapping("/invalidSession")
     public ModelAndView invalidSession(ModelAndView modelAndView, @RequestParam String redirectUrl) {
-        System.out.println("headers: " + redirectUrl);
-
         modelAndView.setViewName("/invalid-page");
-        modelAndView.addObject("redirectUrl", "/author/oauth/authorize?scope=profile message.read&response_type=code&redirect_uri=http://localhost:1112/login&state=k_0K_d&client_id=client4&");
+        modelAndView.addObject("redirectUrl", redirectUrl);
 
         return modelAndView;
     }

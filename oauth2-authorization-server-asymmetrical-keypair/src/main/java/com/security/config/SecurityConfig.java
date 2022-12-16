@@ -65,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/auth/base-login") //自定义的登录页面 **重要**
-                .loginProcessingUrl("/login")
+                .loginProcessingUrl("/auth/login")
                 // 用户通过security登录失败的处理
                 .failureHandler(customAuthenticationFailureHandler)
                 .and()

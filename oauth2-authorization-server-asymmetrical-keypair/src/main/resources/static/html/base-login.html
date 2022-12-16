@@ -54,7 +54,8 @@
 <body>
 <div class="login-container">
     <div class="form-container">
-        <form class="form-signin" method="post" action="/author/login">
+        <form class="form-signin" method="post" action="/author/auth/login">
+            <input id="redirectUrl" th:value="${redirectUrl}" type="hidden">
             <h2 class="form-signin-heading">用户登录</h2>
             <p>
                 <label for="username" class="sr-only">用户名</label>
@@ -64,9 +65,24 @@
                 <label for="password" class="sr-only">密码</label>
                 <input type="password" id="password" name="password" class="form-control" placeholder="密码" required>
             </p>
+
             <button class="btn btn-lg btn-primary btn-block" type="submit">登 &nbsp;&nbsp; 录</button>
         </form>
     </div>
 </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script>
+    // function submit() {
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "/author/login",
+    //         data: $('.form-signin').serialize(),
+    //         success: (res) => {
+    //
+    //         },
+    //         dataType: "json"
+    //     })
+    // }
+</script>
 </html>
