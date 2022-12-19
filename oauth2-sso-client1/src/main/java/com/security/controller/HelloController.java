@@ -1,6 +1,7 @@
 package com.security.controller;
 
 import cn.hutool.http.Method;
+import com.alibaba.fastjson2.JSON;
 import com.security.properties.RedisProperties;
 import com.security.utils.Base64Util;
 import com.security.utils.CookiesUtils;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -22,11 +24,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.beans.IntrospectionException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -44,17 +45,20 @@ public class HelloController {
         return authentication.getName() + Arrays.toString(authentication.getAuthorities().toArray());
     }
 
-
-
     @GetMapping("/getSession")
-    public Object getSession(HttpServletRequest request) {
+    public ResponseResult getSession(HttpServletRequest request) {
         Map<String, Cookie> cookies = CookiesUtils.getCookies(request);
         log.debug("cookies: " + cookies);
         log.debug("cookie: " + cookies.get(redisProperties.getCookieName()).getValue());
         log.debug("sessionId: " + Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue()));
         log.debug("session: " + sessionRepository.findById(Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue())).getMaxInactiveInterval().toMillis());
 
-        return sessionRepository.findById(Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue()));
+        Session session = sessionRepository.findById(Base64Util.decode(cookies.get(redisProperties.getCookieName()).getValue()));
+        Object spring_security_context = session.getAttribute("SPRING_SECURITY_CONTEXT");
+
+//        Object oauth2ClientContext = session.getAttribute("scopedTarget.oauth2ClientContext");
+
+        return ResponseResult.builder().success(spring_security_context);
     }
 
     /**
@@ -63,9 +67,22 @@ public class HelloController {
      * @return
      */
     @RequestMapping("/getCurrentUser")
-    public Object getCurrentUser(Authentication authentication){
-        return authentication;
+    public ResponseResult getCurrentUser(Authentication authentication) throws IllegalAccessException, IntrospectionException, InvocationTargetException {
+        Map<String, Object> resultMap = new HashMap<>();
+        String username = (String) authentication.getPrincipal();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+        Map<String, Object> details = JSON.parseObject(JSON.toJSONString(authentication.getDetails()), Map.class);
+
+        String accessToken = (String) details.get("tokenValue");
+
+        resultMap.put("username", username);
+        resultMap.put("accessToken", accessToken);
+        resultMap.put("authorities", authorities);
+
+        return ResponseResult.builder().success(resultMap);
     }
+
 
     @RequestMapping("/toLogin")
     public ResponseResult login(Authentication authentication) {
