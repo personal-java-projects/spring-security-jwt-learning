@@ -15,6 +15,6 @@ public class V4ServiceInfoController {
     //3秒一次
     @Scheduled(fixedDelay = 3000)
     public void sendServiceInfo(){
-        webSocketService.sendServiceInfo();
+//        webSocketService.sendServiceInfo();
     }
 }

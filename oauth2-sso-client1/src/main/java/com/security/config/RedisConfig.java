@@ -93,7 +93,7 @@ public class RedisConfig {
 
 //        objectMapper.addMixIn(OAuth2AuthenticationDetails.class, OAuth2AuthenticationDetailsMixin.class);
         // OAuth2Authentication必须手动实现反序列化
-//        objectMapper.addMixIn(OAuth2Authentication.class, OAuth2AuthenticationMixin.class);
+        objectMapper.addMixIn(OAuth2Authentication.class, OAuth2AuthenticationMixin.class);
 
         /**
          * 解决如下问题：
@@ -116,5 +116,15 @@ public class RedisConfig {
         redisTemplate.afterPropertiesSet();
 
         return redisTemplate;
+    }
+
+    @Bean
+    public RequestContextListener requestContextFilter() {
+        return new RequestContextListener();
+    }
+
+    @Bean
+    public RedisSerializer<?> springSessionDefaultRedisSerializer(RedisTemplate<?, ?> redisTemplate) {
+        return redisTemplate.getValueSerializer();
     }
 }
