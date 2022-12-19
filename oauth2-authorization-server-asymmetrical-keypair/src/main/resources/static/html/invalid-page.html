@@ -38,14 +38,13 @@
 
     var redirectUrl = document.getElementById("redirectUrl").value
 
+    console.log("redirectUrl: ", redirectUrl)
+
+    // 取消则直接跳回登录页
     function cancel() {
         var a = document.createElement('a')
-        a.href = 'base-login?redirectUrl=' + redirectUrl
+        a.href = 'base-login?redirectUrl=' + encodeURIComponent(redirectUrl)
         a.click()
-
-        if (window.opener) {
-            window.close()
-        }
     }
 
     function confirm() {

@@ -3,6 +3,7 @@ package com.security.config;
 import com.security.filter.ValidateCodeFilter;
 import com.security.granter.SmsAuthenticationSecurityConfig;
 import com.security.handler.CustomAuthenticationFailureHandler;
+import com.security.handler.CustomSavedRequestAwareAuthenticationSuccessHandler;
 import com.security.handler.SessionInformationExpiredStrategyHandler;
 import com.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Resource
+    private CustomSavedRequestAwareAuthenticationSuccessHandler customSavedRequestAwareAuthenticationSuccessHandler;
+
+    @Resource
     private SessionInformationExpiredStrategyHandler sessionInformationExpiredStrategyHandler;
 
     @Override
@@ -68,6 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/auth/login")
                 // 用户通过security登录失败的处理
                 .failureHandler(customAuthenticationFailureHandler)
+                .successHandler(customSavedRequestAwareAuthenticationSuccessHandler)
                 .and()
                 .authorizeRequests()
                 // 放行预请求
