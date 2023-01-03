@@ -115,7 +115,10 @@ public class OauthServiceImpl implements OauthService {
 
         // token信息
         resultMap.put("access_token", accessToken.getValue());
-        resultMap.put("refresh_token", accessToken.getRefreshToken());
+        // 客户端模式不支持refreshToken
+        if (accessToken.getRefreshToken() != null) {
+            resultMap.put("refresh_token", accessToken.getRefreshToken().getValue());
+        }
         resultMap.put("token_type", accessToken.getTokenType());
         resultMap.put("expires_in", accessToken.getExpiresIn());
         resultMap.put("scope", accessToken.getScope().toArray(new String[0]));
@@ -123,14 +126,17 @@ public class OauthServiceImpl implements OauthService {
 
         OAuth2Authentication authentication = tokenStore.readAuthentication(accessToken);
         Authentication userAuthentication = authentication.getUserAuthentication();
-        Collection<? extends GrantedAuthority> authorities = userAuthentication.getAuthorities();
-        // 权限信息
-        List<String> list = new ArrayList<>();
-        for (GrantedAuthority authority : authorities) {
-            list.add(authority.getAuthority());
-        }
+        // 客户端模式没有用户角色信息
+        if (userAuthentication != null) {
+            Collection<? extends GrantedAuthority> authorities = userAuthentication.getAuthorities();
+            // 权限信息
+            List<String> list = new ArrayList<>();
+            for (GrantedAuthority authority : authorities) {
+                list.add(authority.getAuthority());
+            }
 
-        resultMap.put("authorities", list);
+            resultMap.put("authorities", list);
+        }
 
         return resultMap;
     }
